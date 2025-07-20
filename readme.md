@@ -38,12 +38,14 @@ Once the editing is finished, I save the changes I receive in an index.html file
 You can include the editor in your project using either the CDN or by downloading the files directly:
 
 #### CDN Installation
+
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.css">
 <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.js"></script>
 ```
 
 #### Local Installation
+
 1. Download `simplehtmleditor.min.css` and `simplehtmleditor.min.js`
 2. Include them in your project
 
