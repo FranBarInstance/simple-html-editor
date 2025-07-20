@@ -25,8 +25,7 @@ Unlike other editors, it allows you to edit the entire document, body and head, 
 
 Once the editing is finished, I save the changes I receive in an index.html file to replace the downloaded one.
 
-- **[DEMO](https://franbarinstance.github.io/simple-landing-editor/landing/)**
-
+- **[DEMO template collection](https://franbarinstance.github.io/simple-landing-editor/landing/)**
 - [DEMO template 1](https://franbarinstance.github.io/simple-html-editor/demo/agency/)
 - [DEMO template 2](https://franbarinstance.github.io/simple-html-editor/demo/grayscale/)
 - [DEMO template 3](https://franbarinstance.github.io/simple-html-editor/demo/ebook/)
