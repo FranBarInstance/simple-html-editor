@@ -1,10 +1,10 @@
 /*!
- * Simple HTML Editor v1.0.0
+ * Simple HTML Editor v1.0.1
  * A lightweight, customizable WYSIWYG HTML editor for modern web applications
  *
  * @author FranBarInstance
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  * @link https://github.com/FranBarInstance/simple-html-editor
  * @copyright (c) 2022-2025
  */
