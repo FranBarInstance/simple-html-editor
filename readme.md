@@ -6,7 +6,7 @@ Allows you to edit the content of previously created templates or designs, it do
 
 Unlike other editors, it allows you to edit the entire document, body and head, also does not use deprecated execCommand().
 
-[![screencast](https://repository-images.githubusercontent.com/1023009164/802daf9a-8a30-48f9-8a97-f6a6c91638a1)](https://franbarinstance.github.io/simple-html-editor/demo/grayscale)
+[![screencast](https://repository-images.githubusercontent.com/1023009164/802daf9a-8a30-48f9-8a97-f6a6c91638a1)](https://franbarinstance.github.io/simple-landing-editor/landing/)
 
 ## Features
 
@@ -21,12 +21,14 @@ Unlike other editors, it allows you to edit the entire document, body and head, 
 
 ## DEMO
 
-[![screencast](https://user-images.githubusercontent.com/114579121/193446865-ef500949-f3f9-4374-9c27-32d2fb7d43f5.gif)](https://franbarinstance.github.io/simple-html-editor/demo/agency)
+[![screencast](https://user-images.githubusercontent.com/114579121/193446865-ef500949-f3f9-4374-9c27-32d2fb7d43f5.gif)](https://franbarinstance.github.io/simple-landing-editor/landing/)
 
 Once the editing is finished, I save the changes I receive in an index.html file to replace the downloaded one.
 
-- **[DEMO](https://franbarinstance.github.io/simple-html-editor/demo/agency)**
-- [DEMO template 2](https://franbarinstance.github.io/simple-html-editor/demo/grayscale)
+- **[DEMO](https://franbarinstance.github.io/simple-landing-editor/landing/)**
+
+- [DEMO template 1](https://franbarinstance.github.io/simple-html-editor/demo/agency/)
+- [DEMO template 2](https://franbarinstance.github.io/simple-html-editor/demo/grayscale/)
 - [DEMO template 3](https://franbarinstance.github.io/simple-html-editor/demo/ebook/)
 - [DEMO template 4](https://franbarinstance.github.io/simple-html-editor/demo/digimedia/)
 
