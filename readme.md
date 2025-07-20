@@ -6,8 +6,6 @@ Allows you to edit the content of previously created templates or designs, it do
 
 Unlike other editors, it allows you to edit the entire document, body and head, also does not use deprecated execCommand().
 
-![screencast]()
-
 [![screencast](https://repository-images.githubusercontent.com/1023009164/802daf9a-8a30-48f9-8a97-f6a6c91638a1)](https://franbarinstance.github.io/simple-html-editor/demo/grayscale)
 
 ## Features
