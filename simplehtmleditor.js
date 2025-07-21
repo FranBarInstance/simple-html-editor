@@ -10,11 +10,6 @@
  */
 
 (function () {
-    // Constants
-    const MAX_IMAGE_SIZE_BYTES = 1200000; // 1.2MB - Large base64 images degrade DOM performance
-    const MAX_ALLOWED_IMAGE_SIZE_BYTES = 5000000; // 5MB absolute maximum
-    const MIN_GROUPING_WINDOW_MS = 100; // Minimum time window for grouping mutations
-    const TIME_SCALE_FACTOR = 10000; // Time scaling factor for mutation timestamps
 
     // Manages the state of elements that need to be restored during undo/redo operations
     window.ncsedtRestorable = function () {
@@ -168,6 +163,13 @@ if (!("ncsedtRestorableObj" in window)) {
 }
 
 (function () {
+    // Constants
+    const MAX_IMAGE_SIZE_BYTES = 1200000; // 1.2MB - Large base64 images degrade DOM performance
+    const MAX_ALLOWED_IMAGE_SIZE_BYTES = 5000000; // 5MB absolute maximum
+    const MIN_GROUPING_WINDOW_MS = 100; // Minimum time window for grouping mutations
+    const TIME_SCALE_FACTOR = 10000; // Time scaling factor for mutation timestamps
+
+
     /**
      * Simple HTML Editor main class
      * @class ncSimpleHtmlEditor
@@ -559,7 +561,7 @@ if (!("ncsedtRestorableObj" in window)) {
         /*
          * <ncsedt-editable id="ncsedt-editable">
          */
-        this.editable = document.querySelector(this.options.editableContentSelectorContentSelectorContentSelector);
+        this.editable = document.querySelector(this.options.editableContentSelector);
         this.editableInBody();
         this.wrapEditable();
 
@@ -638,7 +640,7 @@ if (!("ncsedtRestorableObj" in window)) {
         if (this.editable.contains(document.body) && this.editable != document.body) {
             console.log('The highest node that can be edited is body, set options.editableContentSelector = "body"');
             this.options.editableContentSelectorContentSelector = 'body';
-            this.editable = document.querySelector(this.options.editableContentSelectorContentSelectorContentSelector);
+            this.editable = document.querySelector(this.options.editableContentSelector);
         }
     };
 
