@@ -76,39 +76,25 @@ With ncsedt-implement:before, dynamic changes are detected so that they can be r
 
 ```javascript
 var options = {
+    // Selector for editable content, default "body"
+    editableContentSelector: "body",
 
-    /*
-     * editable selector, default "body"
-     */
-    editable: "body",
+    // Enable linear undo/redo history (non-linear history possible when false)
+    usesLinearUndoHistory: true,
 
-    /*
-     *  Non-linear undo/redo history possible
-     */
-    linearHistory: true,
+    // Time window in milliseconds for grouping multiple changes into a single history entry
+    mutationGroupingWindowMs: 200,
 
-    /*
-     * Several mutations can belong to the same update in the history, they are grouped by time, in milliseconds.
-     */
-    groupingHistory: 200,
-
-    /*
-     * Number of toolbar columns, by default null, as set in css
-     */
+    // Number of toolbar columns, by default null, as set in css
     toolbarCols: null,
 
-    /*
-     * Save button, disable on click in milliseconds
-     */
+    // Save button, disable on click in milliseconds
     saveTimeout: 500,
 
-    // Max image upload size in bytes.
-    // There is a big performance loss in the editor when using large base64 images.
-    maxImageUpload: 1200000,
+    // Maximum image size in bytes (large base64 images degrade DOM performance)
+    maxImageSizeBytes: 1200000,
 
-    /*
-     * Active buttons and toolbar order
-     */
+    // Active buttons and toolbar order
     toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
 };
 
@@ -121,11 +107,11 @@ The editor is designed to edit the whole page (body) but there is no problem to 
 
 ```javascript
 var editor = new ncSimpleHtmlEditor({
-    editable: "#id",
+    editableContentSelector: "#id",
 });
 ```
 
-For editable: ".class" only the first element found will be editable.
+For editableContentSelector: ".class" only the first element found will be editable.
 
 ### Create a custom button
 
@@ -180,19 +166,15 @@ var editor = new ncSimpleHtmlEditor(options);
 
 ### disabled
 
-Disabled is called whenever there are changes in the editor so that you can determine when to disable the button, an example is the disabledUno function of the undo button, which is disabled whenever editing is not active and enabled if the history is not empty:
+Disabled is called whenever there are changes in the editor so that you can determine when to disable the button, an example is the isUndoButtonDisabled function of the undo button, which is disabled whenever editing is not active and enabled if the history is not empty:
 
 ```javascript
-ncSimpleHtmlEditor.prototype.disabledUno = function () {
-    if (this.editEnable) {
-        if (this.historyUndo.length) {
-            return false;
-        } else {
-            return true;
-        }
-    } else {
-        return true;
-    }
+ncSimpleHtmlEditor.prototype.isUndoButtonDisabled = function () {
+    return !this.isEditingEnabled() || !this.hasUndoHistory();
+};
+
+ncSimpleHtmlEditor.prototype.hasUndoHistory = function () {
+    return this.historyUndo.length > 0;
 };
 ```
 
@@ -269,9 +251,9 @@ editor.addEventListener('contentchanges', function(e) {
 
 ## Functions
 
-- __isEditEnable()__: Determine if editing is active, true/false.
-- __getFocused()__: Get the current element that has the focus.
-- __getFocusedPrev()__: Get the previous element that had the focus
+- __isEditingEnabled()__: Determine if editing is active, true/false.
+- __getCurrentFocusedElement()__: Get the current element that has the focus.
+- __getPreviousFocusedElement()__: Get the previous element that had the focus
 - __getEditable()__: Get editable element.
 - __getClipboard()__: Get clipboard content, can be null.
 - __getDocumentHTML(selector = null)__: Get the HTML with the current changes, If no selector is indicated, the complete document.
