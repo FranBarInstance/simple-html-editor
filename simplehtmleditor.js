@@ -15,19 +15,19 @@
     const MAX_ALLOWED_IMAGE_SIZE_BYTES = 5000000; // 5MB absolute maximum
     const MIN_GROUPING_WINDOW_MS = 100; // Minimum time window for grouping mutations
     const TIME_SCALE_FACTOR = 10000; // Time scaling factor for mutation timestamps
-    
+
     // Manages the state of elements that need to be restored during undo/redo operations
     window.ncsedtRestorable = function () {
         var _this = this;
 
         this.elementsWithTag = document.querySelectorAll('ncsedt-restorable');
         this.elementsWithAttribute = document.querySelectorAll('[data-ncsedt-restorable="true"]');
-        
+
         this.savedHTML = [];
         this.savedAttributes = [];
         this.undoHistoryHTML = [];
         this.undoHistoryAttributes = [];
-        
+
         this.htmlElementCount = 0;
         this.attributeElementCount = 0;
 
