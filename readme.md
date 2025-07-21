@@ -232,17 +232,20 @@ The following code block will be removed when saving the template:
 The editor provides several events that you can listen to for extending functionality:
 
 ### Core Events
+
 - `editorstart`: Fired after the editor initialization is complete
 - `editorchanges`: Fired when changes affect the editor's state
 - `contentchanges`: Fired when editable content is modified
 - `focusedchange`: Fired when the focused element changes
 
 ### Dialog Events
+
 - `showModal`: Fired when any dialog is displayed
 - `click`: Fired for various button interactions
 - `change`: Fired when file inputs or form fields are modified
 
 ### Usage Example
+
 ```javascript
 editor.addEventListener('contentchanges', function(e) {
     console.log('Content was modified');
