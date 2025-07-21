@@ -10,95 +10,33 @@
  */
 
 (function () {
-    /**
-     * RestorableManager Class
-     * Manages the state of restorable elements in the editor.
-     *
-     * @class ncsedtRestorable
-     * @description Handles saving and restoring state for elements marked with
-     *              <ncsedt-restorable> tag or data-ncsedt-restorable="true" attribute.
-     *              This is used for maintaining undo/redo history and preserving
-     *              dynamic changes during editing.
-     *
-     * Elements can be marked as restorable in two ways:
-     * 1. Using the custom tag: <ncsedt-restorable>
-     * 2. Using the data attribute: data-ncsedt-restorable="true"
-     */
+    // Constants
+    const MAX_IMAGE_SIZE_BYTES = 1200000; // 1.2MB - Large base64 images degrade DOM performance
+    const MAX_ALLOWED_IMAGE_SIZE_BYTES = 5000000; // 5MB absolute maximum
+    const MIN_GROUPING_WINDOW_MS = 100; // Minimum time window for grouping mutations
+    const TIME_SCALE_FACTOR = 10000; // Time scaling factor for mutation timestamps
+    
+    // Manages the state of elements that need to be restored during undo/redo operations
     window.ncsedtRestorable = function () {
         var _this = this;
 
-        /**
-         * Collection of elements marked with <ncsedt-restorable> tag
-         * @type {NodeList}
-         * @private
-         */
-        this.restorableNodesTag = document.querySelectorAll('ncsedt-restorable');
+        this.elementsWithTag = document.querySelectorAll('ncsedt-restorable');
+        this.elementsWithAttribute = document.querySelectorAll('[data-ncsedt-restorable="true"]');
+        
+        this.savedHTML = [];
+        this.savedAttributes = [];
+        this.undoHistoryHTML = [];
+        this.undoHistoryAttributes = [];
+        
+        this.htmlElementCount = 0;
+        this.attributeElementCount = 0;
 
-        /**
-         * Collection of elements marked with data-ncsedt-restorable="true"
-         * @type {NodeList}
-         * @private
-         */
-        this.restorableNodesAttr = document.querySelectorAll('[data-ncsedt-restorable="true"]');
-
-        /**
-         * Storage for HTML content of restorable elements
-         * @type {Array<string>}
-         * @private
-         */
-        this.restorableHtml = [];
-
-        /**
-         * Storage for attributes of restorable elements
-         * @type {Array<NamedNodeMap>}
-         * @private
-         */
-        this.restorableAttr = [];
-
-        /**
-         * Storage for undo history of HTML content
-         * @type {Array<string>}
-         * @private
-         */
-        this.restorableUndoHtml = [];
-
-        /**
-         * Storage for undo history of attributes
-         * @type {Array<NamedNodeMap>}
-         * @private
-         */
-        this.restorableUndoAttr = [];
-
-        /**
-         * Counter for HTML elements
-         * @type {number}
-         * @private
-         */
-        this.restorableHtmlCount = 0;
-
-        /**
-         * Counter for elements with attributes
-         * @type {number}
-         * @private
-         */
-        this.restorableAttrCount = 0;
-
-        /**
-         * Store initial HTML content of restorable tag elements
-         * Iterates through all elements with <ncsedt-restorable> tag
-         * and saves their innerHTML for later restoration
-         */
-        this.restorableNodesTag.forEach(function (node) {
-            _this.restorableHtml[_this.restorableHtmlCount++] = node.innerHTML;
+        this.elementsWithTag.forEach(function (node) {
+            _this.savedHTML[_this.htmlElementCount++] = node.innerHTML;
         });
 
-        /**
-         * Store initial attributes of restorable data-attribute elements
-         * Iterates through all elements with data-ncsedt-restorable="true"
-         * and saves their attributes for later restoration
-         */
-        this.restorableNodesAttr.forEach(function (node) {
-            _this.restorableAttr[_this.restorableAttrCount++] = node.cloneNode().attributes;
+        this.elementsWithAttribute.forEach(function (node) {
+            _this.savedAttributes[_this.attributeElementCount++] = node.cloneNode().attributes;
         });
     }
 
@@ -124,8 +62,8 @@
          * before making any changes, enabling the undo operation
          */
         count = 0;
-        this.restorableNodesTag.forEach(function (node) {
-            _this.restorableUndoHtml[count++] = node.innerHTML;
+        this.elementsWithTag.forEach(function (node) {
+            _this.undoHistoryHTML[count++] = node.innerHTML;
         });
 
         /**
@@ -134,8 +72,8 @@
          * before making any changes, enabling the undo operation
          */
         count = 0;
-        this.restorableNodesAttr.forEach(function (node) {
-            _this.restorableUndoAttr[count++] = node.cloneNode().attributes;
+        this.elementsWithAttribute.forEach(function (node) {
+            _this.undoHistoryAttributes[count++] = node.cloneNode().attributes;
         });
 
         /**
@@ -143,8 +81,8 @@
          * Restores the previously saved HTML content to all <ncsedt-restorable>
          * elements, effectively reverting them to their initial state
          */
-        for (let i = 0; i < this.restorableNodesTag.length; i++) {
-            this.restorableNodesTag[i].innerHTML = this.restorableHtml[i];
+        for (let i = 0; i < this.elementsWithTag.length; i++) {
+            this.elementsWithTag[i].innerHTML = this.savedHTML[i];
         }
 
         /**
@@ -152,10 +90,10 @@
          * Removes all existing attributes from data-ncsedt-restorable elements
          * to prepare them for restoration of their saved state
          */
-        for (let i = 0; i < this.restorableNodesAttr.length; i++) {
-            Array.prototype.slice.call(this.restorableNodesAttr[i].attributes).forEach(
+        for (let i = 0; i < this.elementsWithAttribute.length; i++) {
+            Array.prototype.slice.call(this.elementsWithAttribute[i].attributes).forEach(
                 function (cur) {
-                    _this.restorableNodesAttr[i].removeAttribute(cur.name);
+                    _this.elementsWithAttribute[i].removeAttribute(cur.name);
                 }
             )
         }
@@ -167,10 +105,10 @@
          *
          * @fires editorchanges - When restoration is complete
          */
-        for (let i = 0; i < this.restorableNodesAttr.length; i++) {
-            Array.prototype.slice.call(this.restorableAttr[i]).forEach(
+        for (let i = 0; i < this.elementsWithAttribute.length; i++) {
+            Array.prototype.slice.call(this.savedAttributes[i]).forEach(
                 function (cur) {
-                    _this.restorableNodesAttr[i].setAttribute(cur.name, cur.value);
+                    _this.elementsWithAttribute[i].setAttribute(cur.name, cur.value);
                 }
             )
         }
@@ -198,8 +136,8 @@
          * Reverts the HTML content of all <ncsedt-restorable> elements
          * to their state before the last restore operation
          */
-        for (let i = 0; i < this.restorableNodesTag.length; i++) {
-            this.restorableNodesTag[i].innerHTML = this.restorableUndoHtml[i];
+        for (let i = 0; i < this.elementsWithTag.length; i++) {
+            this.elementsWithTag[i].innerHTML = this.undoHistoryHTML[i];
         }
 
         /**
@@ -207,10 +145,10 @@
          * Reverts the attributes of all data-ncsedt-restorable elements
          * to their state before the last restore operation
          */
-        for (let i = 0; i < this.restorableNodesAttr.length; i++) {
-            Array.prototype.slice.call(this.restorableUndoAttr[i]).forEach(
+        for (let i = 0; i < this.elementsWithAttribute.length; i++) {
+            Array.prototype.slice.call(this.undoHistoryAttributes[i]).forEach(
                 function (cur) {
-                    _this.restorableNodesAttr[i].setAttribute(cur.name, cur.value);
+                    _this.elementsWithAttribute[i].setAttribute(cur.name, cur.value);
                 }
             )
         }
@@ -237,12 +175,12 @@ if (!("ncsedtRestorableObj" in window)) {
      *              capabilities with undo/redo support, clipboard operations, and more.
      *
      * @param {Object} options - Configuration options for the editor
-     * @param {string} options.editable - Selector for editable content (default: "body")
-     * @param {boolean} options.linearHistory - Enable/disable linear undo/redo history
-     * @param {number} options.groupingHistory - Time in ms to group history changes
+     * @param {string} options.editableContentSelector - Selector for editable content (default: "body")
+     * @param {boolean} options.usesLinearUndoHistory - Enable/disable linear undo/redo history
+     * @param {number} options.mutationGroupingWindowMs - Time in ms to group history changes
      * @param {number} options.toolbarCols - Number of columns in toolbar
      * @param {number} options.saveTimeout - Timeout for save button in ms
-     * @param {number} options.maxImageUpload - Maximum image upload size in bytes
+     * @param {number} options.maxImageSizeBytes - Maximum image upload size in bytes
      * @param {Array<string>} options.toolbar - List of enabled toolbar buttons
      */
     window.ncSimpleHtmlEditor = function (options = {}) {
@@ -294,30 +232,9 @@ if (!("ncsedtRestorableObj" in window)) {
          */
         const defaults = {
 
-            /**
-             * CSS selector for the editable content area
-             * Identifies which part of the document will be editable
-             * @type {string}
-             * @default "body"
-             */
-            editable: "body",
-
-            /**
-             * Controls whether the undo/redo history maintains a linear sequence
-             * When true, performing a new action after an undo clears the redo stack
-             * When false, allows for branching history paths
-             * @type {boolean}
-             * @default true
-             */
-            linearHistory: true,
-
-            /**
-             * Time window in milliseconds for grouping multiple changes into a single history entry
-             * Helps prevent history fragmentation from rapid successive changes
-             * @type {number}
-             * @default 200
-             */
-            groupingHistory: 200,
+            editableContentSelector: "body",
+            usesLinearUndoHistory: true,
+            mutationGroupingWindowMs: 200,
 
             /**
              * Number of columns to display in the toolbar
@@ -335,13 +252,7 @@ if (!("ncsedtRestorableObj" in window)) {
              */
             saveTimeout: 500,
 
-            /**
-             * Maximum allowed size for image uploads in bytes
-             * Large base64 encoded images can significantly impact editor performance
-             * @type {number}
-             * @default 1200000 (1.2MB)
-             */
-            maxImageUpload: 1200000,
+            maxImageSizeBytes: MAX_IMAGE_SIZE_BYTES,
 
             /**
              * Array of enabled toolbar buttons and their display order
@@ -378,7 +289,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABP0lEQVRo3u3YMU4CQRTG8T+7nkM3HkUTK26BHa2Vt9BGGlAEgl5Dz2E2XoFGGqLNTljJDDNLwXtD3pdMQTIkv+/tsNkFLBaLxQIV8AmsgAeglAZ1yTnwBfy21jtwJg07FJ9NiX34LEoMI3i3Fij+TdwnlniUhrpUwNUBJVbScIevgR/gpmOJDy14B+pSogYuJPGhu80a6O/svdvZ8w1casSnlBDHV/w/NqHlO07D5vtiCU1+AgyADfErIZYK/+THQNHsucV/Ja6l8fsm7/A94MmzR/zMnyT++ZTwo1zxRfM5G/yS7eNvAbwY3vBpePfqlx3+rYUvc8dPDW/4OL79X41aPPgfiedsb5UlMPPsqRF+GXGJTf4VpZMPFWhPfo7iyYcKOLz6yYcKhJZKfGoBtfiUAqrxsQLq8RaLxXKc/AH+RGvPIDl6DwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNDo1ODoyMyswMDowMGRD6r4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6NTk6MzIrMDA6MDCQATIWAAAAAElFTkSuQmCC',
                     icon2: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAACI0lEQVRo3u3YsWoUURTG8Z9ICIiNsDEiioioKGEbK0uxUWwkjU9kbRUbn8BitQkE0byBTUSx0FgkisaAaCGITSx2Bzezd3buzM7OzJL9YNhqzvy/c+45995lrrnmmmsuOljHL6xhoWmgIlrCFg6GnnUsNg1WFn5mTCzhTQZ8aRMdbKJbg4E7+Jtj4AA9kT3R8b+c+zWZWI00sRYT7FXqpWmY6AZixpj4GRN8BXtTNNEdxAvFzDPxMvYjV/El9fIP3KgIflzMe/gTgN/GcpGPXcHnCk2k4YuY2B/wFNZl7FZgIgs+xsRv3CyZNHAJO8r3RB78uJiruDsJfKIL+muwaCWy4Hu4b3StV9FnY018ishaDHyyIT0QV4nKdB4fIz/4Igf+OJ7WbQDO4J380p90eFMchj+GJwH479OGT7SMtxEmFvE8AP+4SfhEoUqEyr/g8CHskQaWTZZOGz0Kj5skD7Ug82ndFpfRE0YvLY1lPtG4TSpUiVN4rSWZj9lhQxmu87JUGH5DP7OtWiax8MmovIav4hu7VfAGvxtaNCqLwj+T3RONVaIK+MZMTAL/Hrc03BMx8L0M+OQOG0pCbT1RJvMfcDYVp7HplIbLy/w2zmXEaqQSacAEPpT5HVzMiVd7JfKmSvLs6v8BEKNaTcTAfxtAFVFtJvLg93C9ZOxaTOSdNlcmjN/qs9ORMhEasZtNQxXVcCW29C8/M6eufuZnEv7o6h+WFd8aD3ft0gAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNDo1OTozMiswMDowMOFciqoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6NTk6MzIrMDA6MDCQATIWAAAAAElFTkSuQmCC',
                     title: 'Edit',
-                    disabled: function () { return _this.disabledEdit() },
+                    disabled: function () { return _this.isEditButtonDisabled() },
                     action: function () { _this.editToggle() }
                 },
                 /**
@@ -394,7 +305,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'code',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAACIElEQVRo3u2ZsUscQRjFf8ZCMFVSmFIskiqkUxEkXbAJFmJO0MQmraSxDYLYJVVII5axCakEm5C/IBwh2ClBxPaKWNhEjMlZXA7mHrPZmZ3ZGYR9cMXevO99783s7c7tQoMGDRrkxHCiPgvAHjADjAO/gE7u8D54A3SNz9tYwrcSBZiS43aivlEwDJwzuALjuU354JGYj3ruh55Cyw6cSTluV9CoBS3gtwNvh8EVeC3jV8CLXOa7DtwDCfBExrupQ5jmywKMCvcvcMcSIFkINV8W4LFwjywcc7zWEMv/GpgNy34D68LftXB0Qq6o4Ydtm3mXRp+kZs3CWQQuqXElqpoHOJW6yQJebSFCzI9J3QUw8h9+9BAh5gHmpfarQ020EKHmAbak/p1jXXCIGOYBvojGc4/ayiFimR8CzkTnvqeGUwjXzdyQZ/MHDN5xz4BjT42ivqXbl6JVWPFovCr1nz2NLxZ4cD4NnwUKvJfaTQ/zob2jCLWl7mlq8yGCI/RuWmbNvRzmqwpPC/fEoUfLs0e0ELbr8ivhfcxtvo+lgkaKXeGsl+jatuhLsc33Ybu8KX7I+GyJZsjlOkoIE3fp/W00Z/O2Y4Ak5m0hTMwxOKPfHbSSmzdDXMp3GxJg20Eni/k+WnK8LwFeVtDIio4EeJjbkA8mxPw5Cd4/xHy8ro/QvwF/bnKAJO8AYi5xh95N7Ce9Dd0H4DBFiAYNGjTIh2vrWlwSpGLTnQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNTowMjowNCswMDowMFgiNkMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTU6MDI6MDQrMDA6MDApf47/AAAAAElFTkSuQmCC',
                     title: 'Code',
-                    disabled: function () { return _this.disabledCode() },
+                    disabled: function () { return _this.isCodeButtonDisabled() },
                     action: function () { _this.editCode() }
                 },
                 /**
@@ -410,7 +321,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'undo',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABhklEQVRo3u3WMWsUURDA8Z9i5CQaG5toIURMIRLUJo3Gyi5fxVYbwWATIYVo48ewsLJUsFFMYZVCiyTNhQhBwXDEnGfxVjiWvTWn7xED84dpdpeZ+e/Mg0cQBEEQBEEQ/E88PuwG/pXBUZI4MeL5ffSwNEauCdzELdzAZUzjNH7gC7axibd4g1Xs55YaDMVBBK7iedXgYMzYwZNKtohAm8QVvMTPv2i8Hv0q12wJgfqZmJBWbC9D4/XYq2p1cgv8nsRFaW9zN16PDzh/kGaPjRAYxXdMtrzfxWu8wntsoVvlPCcd6nncxh2cacm1iUV8zDWBtuji3h8aqjOFu/jUkvcr5koK9LGMU+MWGaIjrWdvRI11aXLZBb5Jq5CLa9LaNNV6h5MlJrCUUQAuSDvfVOtBCYES145pbDTU2cWlEgIlJnFd85l4UUqgxCQeNdToY6aUQO5JdPC5ocbK8EfHM/+1hxklenhae9aVrhut5LgK5JI4izU8w4L8PzwIgiAIgiAIgiPML+zxM5YSM3skAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTA5LTE2VDE1OjAxOjUyKzAwOjAwmCW2HgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wOS0xNlQxNDo1OTo1NiswMDowME3jdLwAAAAASUVORK5CYII=',
                     title: 'Undo',
-                    disabled: function () { return _this.disabledUno() },
+                    disabled: function () { return _this.isUndoButtonDisabled() },
                     action: function () { _this.undo() }
                 },
                 /**
@@ -426,7 +337,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'redo',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABiklEQVRo3u3WT0tUURjH8U+hhoSuijQqd4oECS1aBJK73ktvoCCs2am7auHLCIJatSraRFjbsDYFUVAgRqFWji7uLPQ4c+femWO6eL5wFvfP8/D9nXMv5xAEQRAEQRAEQTUaRy3Qr/xOenMgQ+MBXMUNXMdFnMUZDOIXvuID3uIlXuFfTfn7uWdkEg+x1pqZOuM7lnG5ovze2r6ZwjM0exBPRxNPMF1Rvq8Ag7iNzQzi6fiLRZzqIt9zgPNYOQTxdKxgokT+QIATFeRn8BQXSt75ied4gdf4hh+t/mM4h2u4qfjZh0t6/cbpkudVnPfJr5fMxipuYaRGz1HcaYXsZZUqM47PHZpsYB5DdRomDGMJ24cRYAhvOjT4hCt9iKfMKT7BrAHudih+11qZnDRqyFcKMKHYPdPCL8p/5P8hXynAY+2/+ZljIN81wCXFGSUtundM5LsGWGhT8NH+HfIo5Q8EOJlc/1GcHPfyAFsZ5bOfKtuFmsUjvFdsPLnkcxw3giAIgiAIgiAIwC7w7i5ZynjYFQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNTowMjowNCswMDowMFgiNkMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTU6MDI6MDQrMDA6MDApf47/AAAAAElFTkSuQmCC',
                     title: 'Redo',
-                    disabled: function () { return _this.disabledRedo() },
+                    disabled: function () { return _this.isRedoButtonDisabled() },
                     action: function () { _this.redo() }
                 },
                 /**
@@ -442,7 +353,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'up',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAAsUlEQVRo3u3VTQqCUBhG4dMP0aBZbaLVNWzaRlqJm2gpzmoSNXGQYJJe7bsXzgOCA9H3CCJIkqRei+gBKS7AFVhGDxk7/tUcxUV8ji8uomt8MRF947OP+GV8thFDxmcXMWZ8NhEp4yeJWCWMPwFn4PHl2NL+C9fAveO6I7AHqr+88gFq2m/6MMdDsviIDCiZAdEMiGZANAOiGRDNgGjFB6xnvPcN2DXnG+AZHStJkqb2BvfBZVUwT6fHAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTA5LTI3VDExOjAxOjU1KzAwOjAwYMkoEwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wOS0yN1QwMTowMTo1NSswMDowMBGUkK8AAAAASUVORK5CYII=',
                     title: 'Select up',
-                    disabled: function () { return _this.disabledUp() },
+                    disabled: function () { return _this.isUpButtonDisabled() },
                     action: function () { _this.up() }
                 },
                 /**
@@ -458,7 +369,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'down',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAArUlEQVRo3u2XvQrCMBgAT9FJEAqu4vO4+BgOvrSv4NjJOgm10Gp/vwTv4JuSkLtsAREREelkBxTAKlqkLw+gqs1hjkvW0ZUGRAsYEC1gQLSAAdECBkQLGBAtYEC0wN8HbEacPQLbjvXm45yAfcveCrgvHX8GSj5/XUPmCdyWlp8qIlR+bEQS8kMjkpLvG5Gk/K8RSct/i8hCvi0iK/lmRJbyby7ANVpCRERE5uIFO9pmz/tN+9wAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMjdUMDE6MDE6MzcrMDA6MDAxOTC9AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE2VDE1OjAxOjE1KzAwOjAwqJU+1gAAAABJRU5ErkJggg==',
                     title: 'Selenct down',
-                    disabled: function () { return _this.disabledDown() },
+                    disabled: function () { return _this.isDownButtonDisabled() },
                     action: function () { _this.down() }
                 },
                 /**
@@ -474,7 +385,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'cut',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAB9klEQVRo3u2YTU7CQBiGHzHqCgzXELmAceERSIhncUndGRFTAtHD+BNdeAAFI3HJDQSXGFxMScgU2pnOtDOLvskkJP2m87ztVzp9oVSpUmlqAn1gDPxGYwyEwLFruCQdAHfAH7DcMhbAENh3DbsJ/jkBXB5Plk0ECWsp6V4DfjUGBcArGWgSb5sp0Aaq0WgBE+Lt1MgZPlA5SShN+gLqG+rqkbH12lvX8ACf0sRWQu25VDtyDQ8wkyZXE2prUu3MNbyugUOp9sc1POi1UFuq/XAND/GHeML2h/hbqr12DQ9ie7CQTjhFPLC1aLQ3wC+Bnmv4lYYpi2QFKAQexLbg0bKJwuDXTQyIt1NWE4FGrVU1EG/YETBH/FW+A11Ez5uayBVeRRcpJq4S6jumi+9aMPAG7ABnW46fRsdfpPpX4NLWVbQh3TvhpQIJ+gRxB3Lr90rOhiqIdlmpk4cJWwpQ/4v1rp104L0zkQW+UBNyLjRDvNRuUHuRpRkM8gJXyYVUwQo3oZsLebeZy5ILebOdzpoLefNBE0on1MmFuopr5GrCJBfy4qPeJBfyIlYxyYW8CLZMciEvosVQmqyTC3kR7mbNhRbAkYEBqyay5EJ9Q3hVE0rSzYUegD1LBtJMKEslF1ogrrxNeOuSc6F59LuHec+XKlXKUP835G8IanS10wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDo0MDowNCswMDowMFFlZxoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjdUMDQ6NDA6MDQrMDA6MDAgON+mAAAAAElFTkSuQmCC',
                     title: 'Cut',
-                    disabled: function () { return _this.disabledCut() },
+                    disabled: function () { return _this.isCutButtonDisabled() },
                     action: function () { _this.cut() }
                 },
                 /**
@@ -490,7 +401,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'copy',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAA7klEQVRo3u2ZSw6CMBRFj4apcQMyZu0aEscO3JGagAvAATqQQOTTvlfiPQmTQuk9bdKXtCDSJAdKoAaayE+U8HeD4NEESsPwiwU2PW01sIsxMxMyLOrcjPgmGbbeASTgHcBLwKJO1MAZKKaG+7XNWdeJx3vMYALWdaIBTkNh52yj1nXiM+Y+lIBVnRg1zt/uQskgAW8k4I0EvJGANxLwRgLeSMAbCXizeoGspy3ps9Auq18BCXgjAW8k4E02o8+T78PdKFelHaqhF3NW4GoQuMsl5M8K2ksHq7uBG3AIPSM57aVDFTF4BRxjhBcheQHmPezLx9HoXgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDozOTozNCswMDowMArEXrAAAAAElFTkSuQmCC',
                     title: 'Copy',
-                    disabled: function () { return _this.disabledCopy() },
+                    disabled: function () { return _this.isCopyButtonDisabled() },
                     action: function () { _this.copy() }
                 },
                 /**
@@ -506,7 +417,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'paste',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABG0lEQVRo3u2ZzWrCUBBGj9WtUNc1a99KfT1F6KYoXbgVq6+iQiK4TRcmoGKS3h/7WToHZhHIzP0OCVlkID4dYAxsgVNRG2AEtB9wXlR6wBeQV9QaeFWHrKLdEL6sFfCiDnuP8Q/ClzX8rVAJMAMyh3BlfQBvQB+Ye/RnwDswCAm/9zi4rP7NLN85h6LfmVnAoTEFcmDqI+Dz2lzWvJBIgEXgrLQqZKtGIG+4NycuTfPvZn3Kz5kLJqDGBNR0AnpbAb3R+PNPwATUmIAaE1BjAmpMQI0JqDEBNSagxgTUmIAaE1BjAmrq/swdge7Fdex9gAuVC466J7AUBr7l06dpwHnBFrIailE7rvdtTiScF2ypIHgKTELCG8Z/4BuHD+VLGLARSgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDozOTo1MCswMDowMDjkcyQAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjdUMDQ6Mzk6NTArMDA6MDCQATIWAAAAAElFTkSuQmCC',
                     title: 'Paste',
-                    disabled: function () { return _this.disabledPaste() },
+                    disabled: function () { return _this.isPasteButtonDisabled() },
                     action: function () { _this.paste() }
                 },
                 /**
@@ -522,7 +433,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'link',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADHElEQVRo3u2ZzUsUYRzHP7uBSh0qLTtUKKuBQdGpOkSkFBQEnZLqYJEQBL0IEkT0B1QQhYc6mG1u18B7eRGtSxHUUahs7WZrmEX4Eurh2YHxO2+77szOCvuFYXlmvvP7fZ6Z53n2eZ6Bqqqqal0rEVPeOuAo0AQ0ADngO/AWmI/7ofgpBWSAv8Cyy/EHSAPNcYO6qRdY8ADXYx64HjewpSTwrEBwPfqCgm8oA3wa6Ha59g0YAoaBL0A9sFk8hzH940PEnJ7wgzifag7oxDmAJIEuYEb8c5jOXhHwk0BrwL37XSrxvFLgUwXG6JJ7Z4GacsFnSoS34mQlRsd6gbf0QuK4DQQkQ6zAAHBRzv0A2jEjTrGaknJDlBW4DVwOER5gu5R/hcTq0D7gP4U1mx3AAYIfXAKYoEx9YEgSTQEtLr5TwL+85zX+o8oFnKNQbRTw9cCiJDvt4R0WX7+HrxWYFm86CniA85Loo4/3Kc4R6ph4GjDTap3YNUdVgbuS7J6PdwswLv5R8WzKA9s9N8OCTQJtcu6xJOsJiHEIWLL5l4Cd4hkluJmtgioUPg2ck/O/pbw1IM57YMxWTgAnxPM5/5sBroZRAQv+EqbT2pWVcnsB8UakrDPN6Tx8N+YNlSz7YkST78LZJA4GxOthdbN7JNfbCHGG0CvJ5oCN4hkTzzimw3rpgfjvhAWrSuFcw04C28TXgXN4fOIT95N4z0ZVAZ1Z5vBejOia942H74z4FvB/W2tWHc6tj04ffw1merCMmS6cdPG0AD8l5qso4MEMbfZEXwneBEtiJmqNLtdSmOZnj7kI7I2qAlck2UAJsdzgl4FbYYB6DVf6h5QrAX4E2C3n08DDKCugi4fGoEBFwL/EvOFIdZzVrztLcX8uXs0mU2ScNasWs9FqT95VIvxgueAtpQVgBrPp5Kc9lQIPZhGhc/MZzM6DwiQwy0BdScUGb+mGC5DVJwaB+5j9mwkPX6zwlvo84IKO/kqAt3QNMxMt9ONEaMvAMNWE2SWe9QCP5fPQWj7y1QBH8qCNmH2gLPCOCv9AV1VVVVWgVgAPDHRgefYM4AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNDo1OTozMiswMDowMOFciqoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6NTk6MzIrMDA6MDCQATIWAAAAAElFTkSuQmCC',
                     title: 'Link',
-                    disabled: function () { return _this.disabledLink() },
+                    disabled: function () { return _this.isLinkButtonDisabled() },
                     action: function () { _this.editLink() }
                 },
                 /**
@@ -538,7 +449,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'image',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABzUlEQVRo3u2ZyUrDUBSGvzosxLEqqAj6AKJvIK58AKdncOXeCUdc+BKiILoQhYLgwpUg4hOIIu4UdyotKDi0LpJLQ8hNk7S9p4X7wYHCPWn+L0N7cwMWWRqr/P0bwARwJS2aNHzBrTXpMHHZdIN/u1UAVqRDJQk/BUx7JFalw8UNr5ihDs6ELrxiFvhxe5alw/rZKhE+SGJJOnTc8Io5j8RiuTtPlRgfBNaBcaBPs32X+/kXyEXcbwfF/6B3TU8OyODc+NkkcsPAM8Xfcql69BykWJzUQHhVe7qQYZdQFmhPYl4FPoB03I38R8EkvVH332A4WMWxAtJYAWmsgDRWQBorII0VkKbSAmmgW1pKkWQ6fQZcUv6SZeTpdCUFFjy9OyV6Sz2LGxcYA748vXmcJZQg+oFroKdWBNqA+4D+HDDi620Bbt3xc/T3oFGBQ/QP4w9Ap9uXAo5847oVOmMC8yHhVWXc8NsBY3/ApJTAKPAZQUBdLnnN2CswYFqgFbiLGD5K3QDNJgX2Kxhe1a5JgWpj14XqhroXaAoZy+Ks4ytM3wdedO8QQs/AhWBgP6dJNhoCXpB/N/BEcTqSSOIYZ33edPA34ABn9mqpWf4B0/l4sgdYXjsAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMTZUMTU6MDE6MTUrMDA6MDDZyIZqAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE2VDE1OjAxOjE1KzAwOjAwqJU+1gAAAABJRU5ErkJggg==',
                     title: 'Image',
-                    disabled: function () { return _this.disabledImage() },
+                    disabled: function () { return _this.isImageButtonDisabled() },
                     action: function () { _this.editImage() }
                 },
                 /**
@@ -554,7 +465,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     name: 'head',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADI0lEQVRo3u2ZT09TQRTFf4KtCRBNwJIodK0LdwgWd+BnMBDdgaisCYluXAqu1QBxSeKfGFeKSz6AAZMaNzRxYQWbKC6gKGWhdTGvyePOtH3TzrQYe5JZzOvMmXPfu3PvnSm00ML/jWOOeNqBIWAEGADOA2eAruD3PeArsAGsA6vAO+BPs19AEpgHNoGiZfsCzAH9zRCeAJaAgxqEy3YALACnGyX+GvDDgXDZtoFxn8JjwJMKAnaAp8ANYDD4SrGgJYJnU8AzYLcCz2Iwxyk6gLdlFtwAJoIxNnyTQKYM54olX9U3bxL/C5gBjtfJPQvsG/jf4OhLmNwmA1xw9YaAFCrMynUW6iW+biB9j/Jp1+gH0ob1xmolTKBHm4wn8WEjcmLN70BPLWRL6D7v0m3KIQUUxNqPbUmS6ElqpgHiS7gn1i5gmbHn0UNlPdHGFl3orjQXdXI7em0z0UDxJUwLDVmgLcrEYTFxB4dJxQKdQF5oGZKDTBaNiP4KagM3Gj+DtcMYjWLAgOivNkF8ubWlNqMB50Q/Lfpx4AEqc26hNnzc0xi5ttRmhExesk6XEaoYPPMxphc9qVWFjP/yrZhqlpynMSfQ88EhRApLAkXDs9+exlSFyYA90T8p+suGOcuexpwS/XwUoz5SOfbGUb66ReUN6mJMSmj5EMWAV2LSVJRJnnBLaHkpB5hcaE30R2kerlTRZoT8bLscnVJiMMrENtSlU3jiZBMMmBIaPmMRNefE5AwerjoqIA58Ehru2xD0oye02QYacAc9gfXZkiwIkn3U/vCNy+hHyoe1EHWjag+Z6pMexZ9FP0xtU8e96Th6vZLGz41yEpWo5HpX6yVeNJDmcOtOw+hn4CLwyAV5DHUykuQF1O1BZx3cceAuus8Xgdc4vEjoKGNE6WtMWxrSCdxED5Vh8c6TZww9MoVbHniOql8uoQ4j8aD1Bs9uAy/QM6x0G69XOGPo0clF+4aDDRsVPajrPpPv2rYCKs53N0p8GH2osiNbg/AsqjywzrBhuPqbtQ24iCq9B1C3B30c/pt1E1VTraGuS9Y5An+zttDCv46/K53XmFVUFdIAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMjRUMDc6MTM6NTQrMDA6MDAX56YDAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTI0VDA3OjEzOjU0KzAwOjAwZroevwAAAABJRU5ErkJggg==',
                     title: 'Edit head',
-                    disabled: function () { return _this.disabledHead() },
+                    disabled: function () { return _this.isHeadButtonDisabled() },
                     action: function () { _this.editHead() }
                 },
                 /**
@@ -572,7 +483,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABvklEQVRo3u2Zu0oDQRSGv0jUWKigTZAIYiH2Bn0FOx/AQiSVVV4hpYiVta3YeEGsLSwEo40+gRcQO4MXtIzF7uKyzGSzs3NmDcwPU+25/N/mZGaXBS8vL6//rEXgFPgAusKrZdv8LPDmwLgYxJFj89YhXIyNKESyqJSWUI/q9qAAiEHoAGyNiTiEawDrEEUA9IIYGACAlX7jSykAqlhbf+hSyvVuP/FDlswUJg9QtMoGOWmz61QD/wt4gKIlAVABmkAb+ArXNbAFjGSo85rXiMlRXgPu0Z++hxn6jwIN4DlD/1wAlRTzB8C4gY9p4NwFQLOH+V3ybb9GuVkB2ujvfCFnR1aAT0XOIzBh2L/qGuBbkbNu2LtO8E5gmm8EcJuIf8Jsm64DnbDGD7DsCmAzEW/yGhg3H60rVwBl4CYWv6qJm8lg/gGYcwUAMMXfblRTXG+FJuvS5k0BIJj7DWBYYT6qFYcQMZ8HQKedRL0OwaOCiHkJgBKwr6ib3LnmbZgHeE9plrbWFDXLwJkm3tqdj3SSE2BPU3cMuJQ2D7BAvg8cLwSPxCpNAneS5uMQx5iPU6NH7SpwIWney8vLS16/eT7oBHxeUFYAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMTdUMTY6Mjk6NTQrMDA6MDCj7IdOAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE3VDE2OjI5OjU0KzAwOjAw0rE/8gAAAABJRU5ErkJggg==',
                     icon2: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABvklEQVRo3u2Zu0oDQRSGv0jUWKigTZAIYiH2Bn0FOx/AQiSVVV4hpYiVta3YeEGsLSwEo40+gRcQO4MXtIzF7uKyzGSzs3NmDcwPU+25/N/mZGaXBS8vL6//rEXgFPgAusKrZdv8LPDmwLgYxJFj89YhXIyNKESyqJSWUI/q9qAAiEHoAGyNiTiEawDrEEUA9IIYGACAlX7jSykAqlhbf+hSyvVuP/FDlswUJg9QtMoGOWmz61QD/wt4gKIlAVABmkAb+ArXNbAFjGSo85rXiMlRXgPu0Z++hxn6jwIN4DlD/1wAlRTzB8C4gY9p4NwFQLOH+V3ybb9GuVkB2ujvfCFnR1aAT0XOIzBh2L/qGuBbkbNu2LtO8E5gmm8EcJuIf8Jsm64DnbDGD7DsCmAzEW/yGhg3H60rVwBl4CYWv6qJm8lg/gGYcwUAMMXfblRTXG+FJuvS5k0BIJj7DWBYYT6qFYcQMZ8HQKedRL0OwaOCiHkJgBKwr6ib3LnmbZgHeE9plrbWFDXLwJkm3tqdj3SSE2BPU3cMuJQ2D7BAvg8cLwSPxCpNAneS5uMQx5iPU6NH7SpwIWney8vLS16/eT7oBHxeUFYAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMTdUMTY6Mjk6NTQrMDA6MDCj7IdOAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE3VDE2OjI5OjU0KzAwOjAw0rE/8gAAAABJRU5ErkJggg==',
                     title: 'Save',
-                    disabled: function () { return _this.disabledSave() },
+                    disabled: function () { return _this.isSaveButtonDisabled() },
                     action: function () { _this.save() }
                 }
             },
@@ -580,7 +491,7 @@ if (!("ncsedtRestorableObj" in window)) {
         }
 
         this.options = this.deepMerge(defaults, options);
-        this.options.groupingHistory = this.options.groupingHistory / 10000;
+        this.options.mutationGroupingWindowMs = this.options.mutationGroupingWindowMs / TIME_SCALE_FACTOR;
 
         /*
             <div id="ncsedt-implement">:
@@ -638,7 +549,7 @@ if (!("ncsedtRestorableObj" in window)) {
         /*
          * Determines if the editing is active, can be true/false.
          */
-        this.editEnable = null;
+        this.editingEnabled = null;
 
         /*
          * Private clipboard, does NOT share data with other applications.
@@ -648,7 +559,7 @@ if (!("ncsedtRestorableObj" in window)) {
         /*
          * <ncsedt-editable id="ncsedt-editable">
          */
-        this.editable = document.querySelector(this.options.editable);
+        this.editable = document.querySelector(this.options.editableContentSelectorContentSelectorContentSelector);
         this.editableInBody();
         this.wrapEditable();
 
@@ -661,8 +572,8 @@ if (!("ncsedtRestorableObj" in window)) {
         /*
          * Default focus to editable
          */
-        this.focused = this.editable;
-        this.focusedPrev = this.focused;
+        this.focusedElement = this.editable;
+        this.previousFocusedElement = this.focusedElement;
 
         /*
          * Observer
@@ -694,25 +605,16 @@ if (!("ncsedtRestorableObj" in window)) {
         return target;
     }
 
-    /**
-     * Determine if editing is active, true/false
-     */
-    ncSimpleHtmlEditor.prototype.isEditEnable = function (target, source) {
-        return this.editEnable;
+    ncSimpleHtmlEditor.prototype.isEditingEnabled = function () {
+        return this.editingEnabled;
     }
 
-    /**
-     * Get the current element that has the focus.
-     */
-    ncSimpleHtmlEditor.prototype.getFocused = function (target, source) {
-        return this.focused;
+    ncSimpleHtmlEditor.prototype.getCurrentFocusedElement = function () {
+        return this.focusedElement;
     }
 
-    /**
-     * Get the previous element that had the focus.
-     */
-    ncSimpleHtmlEditor.prototype.getFocusedPrev = function (target, source) {
-        return this.focusedPrev;
+    ncSimpleHtmlEditor.prototype.getPreviousFocusedElement = function () {
+        return this.previousFocusedElement;
     }
 
     /**
@@ -734,9 +636,9 @@ if (!("ncsedtRestorableObj" in window)) {
      */
     ncSimpleHtmlEditor.prototype.editableInBody = function () {
         if (this.editable.contains(document.body) && this.editable != document.body) {
-            console.log('The highest node that can be edited is body, set options.editable = "body"');
-            this.options.editable = 'body';
-            this.editable = document.querySelector(this.options.editable);
+            console.log('The highest node that can be edited is body, set options.editableContentSelector = "body"');
+            this.options.editableContentSelectorContentSelector = 'body';
+            this.editable = document.querySelector(this.options.editableContentSelectorContentSelectorContentSelector);
         }
     };
 
@@ -807,8 +709,8 @@ if (!("ncsedtRestorableObj" in window)) {
             element.src = this.options.buttons.edit.icon2;
         }
 
-        this.editEnable = true;
-        this.setFocus(this.focused);
+        this.editingEnabled = true;
+        this.setFocus(this.focusedElement);
         this.observe();
         document.dispatchEvent(new Event("editorchanges"));
     };
@@ -834,7 +736,7 @@ if (!("ncsedtRestorableObj" in window)) {
             focused.classList.remove('focused');
         }
 
-        this.editEnable = false;
+        this.editingEnabled = false;
         document.dispatchEvent(new Event("editorchanges"));
     };
 
@@ -843,7 +745,7 @@ if (!("ncsedtRestorableObj" in window)) {
      * Receives the element on which the focus will be set.
      */
     ncSimpleHtmlEditor.prototype.setFocus = function (element) {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
@@ -859,10 +761,10 @@ if (!("ncsedtRestorableObj" in window)) {
             oldfocused.classList.remove('focused');
         }
 
-        this.focusedPrev = this.focused;
-        this.focused = element;
-        this.focused.focus();
-        this.focused.classList.add('focused');
+        this.previousFocusedElement = this.focusedElement;
+        this.focusedElement = element;
+        this.focusedElement.focus();
+        this.focusedElement.classList.add('focused');
         document.dispatchEvent(new Event("focusedchange"));
     };
 
@@ -976,7 +878,7 @@ if (!("ncsedtRestorableObj" in window)) {
      * Editing on/off
      */
     ncSimpleHtmlEditor.prototype.editToggle = function () {
-        if (this.editEnable) {
+        if (this.editingEnabled) {
             this.editOff();
         } else {
             this.editOn();
@@ -1001,9 +903,9 @@ if (!("ncsedtRestorableObj" in window)) {
      * Focus on parent
      */
     ncSimpleHtmlEditor.prototype.up = function () {
-        if (this.focused.parentElement) {
-            this.setFocus(this.focused.parentElement);
-            this.focused.scrollIntoView({ block: "center" });
+        if (this.focusedElement.parentElement) {
+            this.setFocus(this.focusedElement.parentElement);
+            this.focusedElement.scrollIntoView({ block: "center" });
         }
     };
 
@@ -1011,9 +913,9 @@ if (!("ncsedtRestorableObj" in window)) {
      * Focus on first child
      */
     ncSimpleHtmlEditor.prototype.down = function () {
-        if (this.focused.firstElementChild) {
-            this.setFocus(this.focused.firstElementChild);
-            this.focused.scrollIntoView({ block: "center" });
+        if (this.focusedElement.firstElementChild) {
+            this.setFocus(this.focusedElement.firstElementChild);
+            this.focusedElement.scrollIntoView({ block: "center" });
         }
     };
 
@@ -1021,8 +923,8 @@ if (!("ncsedtRestorableObj" in window)) {
      * Current focus to clipboard
      */
     ncSimpleHtmlEditor.prototype.copy = function () {
-        if (this.focused != this.editable) {
-            this.clipboard = this.focused.outerHTML;
+        if (this.focusedElement != this.editable) {
+            this.clipboard = this.focusedElement.outerHTML;
             document.dispatchEvent(new Event("editorchanges"));
         }
     };
@@ -1031,10 +933,10 @@ if (!("ncsedtRestorableObj" in window)) {
      * Cut current focus
      */
     ncSimpleHtmlEditor.prototype.cut = function () {
-        if (this.focused != this.editable) {
-            this.clipboard = this.focused.outerHTML;
-            this.focused.parentElement.removeChild(this.focused);
-            this.setFocus(this.focused.parentElement);
+        if (this.focusedElement != this.editable) {
+            this.clipboard = this.focusedElement.outerHTML;
+            this.focusedElement.parentElement.removeChild(this.focusedElement);
+            this.setFocus(this.focusedElement.parentElement);
         }
     };
 
@@ -1042,164 +944,77 @@ if (!("ncsedtRestorableObj" in window)) {
      * Paste clipboard content
      */
     ncSimpleHtmlEditor.prototype.paste = function () {
-        if (this.clipboard && this.focused != this.editable) {
-            this.focused.insertAdjacentHTML('afterend', this.clipboard);
+        if (this.clipboard && this.focusedElement != this.editable) {
+            this.focusedElement.insertAdjacentHTML('afterend', this.clipboard);
         }
     };
 
-    /**
-     * When the edit button is disabled, never
-     */
-    ncSimpleHtmlEditor.prototype.disabledEdit = function () {
+    ncSimpleHtmlEditor.prototype.isEditButtonDisabled = function () {
         return false;
     };
 
-    /**
-     * When the save button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledSave = function () {
-        if (this.editEnable && !this.saving) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isSaveButtonDisabled = function () {
+        return !this.editingEnabled || this.saving;
     };
 
-    /**
-     * When the undo button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledUno = function () {
-        if (this.editEnable) {
-            if (this.historyUndo.length) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isUndoButtonDisabled = function () {
+        return !this.isEditingEnabled() || !this.hasUndoHistory();
     };
 
-    /**
-     * When the redo button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledRedo = function () {
-        if (this.editEnable) {
-            if (this.historyRedo.length) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.hasUndoHistory = function () {
+        return this.historyUndo.length > 0;
     };
 
-    /**
-     * When the up button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledUp = function () {
-        if (this.editEnable && this.focused.parentElement && this.focused.parentElement.isContentEditable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isRedoButtonDisabled = function () {
+        return !this.isEditingEnabled() || !this.hasRedoHistory();
     };
 
-    /**
-     * When the down button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledDown = function () {
-        if (this.editEnable && this.focused.firstElementChild) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.hasRedoHistory = function () {
+        return this.historyRedo.length > 0;
     };
 
-    /**
-     * When the cut button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledCut = function () {
-        if (this.editEnable) {
-            if (this.focused == this.editable) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isUpButtonDisabled = function () {
+        return !this.editingEnabled || !this.canMoveUp();
     };
 
-    /**
-     * When the copy button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledCopy = function () {
-        if (this.editEnable) {
-            if (this.focused == this.editable) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.canMoveUp = function () {
+        return this.focusedElement.parentElement && this.focusedElement.parentElement.isContentEditable;
     };
 
-    /**
-     * When the redpasteo button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledPaste = function () {
-        if (this.editEnable && this.clipboard && this.focused != this.editable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isDownButtonDisabled = function () {
+        return !this.editingEnabled || !this.canMoveDown();
     };
 
-    /**
-     * When the link button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledLink = function () {
-        if (this.editEnable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.canMoveDown = function () {
+        return this.focusedElement.firstElementChild;
     };
 
-    /**
-     * When the image button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledImage = function () {
-        if (this.editEnable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isCutButtonDisabled = function () {
+        return !this.editingEnabled || this.focusedElement == this.editable;
     };
 
-    /**
-     * When the head button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledHead = function () {
-        if (this.editEnable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isCopyButtonDisabled = function () {
+        return !this.editingEnabled || this.focusedElement == this.editable;
     };
 
-    /**
-     * When the code button is disabled
-     */
-    ncSimpleHtmlEditor.prototype.disabledCode = function () {
-        if (this.editEnable) {
-            return false;
-        } else {
-            return true;
-        }
+    ncSimpleHtmlEditor.prototype.isPasteButtonDisabled = function () {
+        return !this.editingEnabled || !this.clipboard || this.focusedElement == this.editable;
+    };
+
+    ncSimpleHtmlEditor.prototype.isLinkButtonDisabled = function () {
+        return !this.editingEnabled;
+    };
+
+    ncSimpleHtmlEditor.prototype.isImageButtonDisabled = function () {
+        return !this.editingEnabled;
+    };
+
+    ncSimpleHtmlEditor.prototype.isHeadButtonDisabled = function () {
+        return !this.editingEnabled;
+    };
+
+    ncSimpleHtmlEditor.prototype.isCodeButtonDisabled = function () {
+        return !this.editingEnabled;
     };
 
     /**
@@ -1208,11 +1023,11 @@ if (!("ncsedtRestorableObj" in window)) {
      * @throws {Error} If options are invalid
      */
     ncSimpleHtmlEditor.prototype.validateOptions = function(options) {
-        if (options.editable && typeof options.editable !== 'string') {
+        if (options.editableContentSelector && typeof options.editableContentSelector !== 'string') {
             throw new Error('Option "editable" must be a string selector');
         }
 
-        if (options.maxImageUpload && typeof options.maxImageUpload !== 'number') {
+        if (options.maxImageSizeBytes && typeof options.maxImageSizeBytes !== 'number') {
             throw new Error('Option "maxImageUpload" must be a number');
         }
 
@@ -1221,12 +1036,12 @@ if (!("ncsedtRestorableObj" in window)) {
         }
 
         // Sanitize values
-        if (options.groupingHistory) {
-            options.groupingHistory = Math.max(100, options.groupingHistory);
+        if (options.mutationGroupingWindowMs) {
+            options.mutationGroupingWindowMs = Math.max(MIN_GROUPING_WINDOW_MS, options.mutationGroupingWindowMs);
         }
 
-        if (options.maxImageUpload) {
-            options.maxImageUpload = Math.min(options.maxImageUpload, 5000000); // 5MB max
+        if (options.maxImageSizeBytes) {
+            options.maxImageSizeBytes = Math.min(options.maxImageSizeBytes, MAX_ALLOWED_IMAGE_SIZE_BYTES);
         }
     };
 
@@ -1241,7 +1056,7 @@ if (!("ncsedtRestorableObj" in window)) {
             class changes in nav, menus, etc.
 
             Only mutations that originate from the element being edited
-            (_this.focused.contains(mutation.target)) are added to the
+            (_this.focusedElement.contains(mutation.target)) are added to the
             history for "attributes".
 
             Only the changes forced by the application (historyforce) are
@@ -1249,14 +1064,14 @@ if (!("ncsedtRestorableObj" in window)) {
         */
 
         return new MutationObserver(function (mutations) {
-            if (!_this.editEnable || _this.ignoreMutations) {
+            if (!_this.editingEnabled || _this.ignoreMutations) {
                 return;
             }
 
             mutations.forEach(function (mutation) {
 
                 // Time to group mutations.
-                mutation.time = Date.now() / 10000;
+                mutation.time = Date.now() / TIME_SCALE_FACTOR;
 
                 switch (mutation.type) {
                     case 'characterData':
@@ -1268,7 +1083,7 @@ if (!("ncsedtRestorableObj" in window)) {
                     case 'attributes':
                         var attrName = mutation.attributeName;
                         var attrValue = mutation.target.getAttribute(mutation.attributeName);
-                        if ((_this.focused.contains(mutation.target) || document.head.contains(mutation.target)) && _this.historyForceCheck(attrName, attrValue)) {
+                        if ((_this.focusedElement.contains(mutation.target) || document.head.contains(mutation.target)) && _this.historyForceCheck(attrName, attrValue)) {
                             mutation.newValue = attrValue;
                             _this.historyUndo.push(mutation);
                             _this.historyForceRemove(attrName, attrValue);
@@ -1318,7 +1133,7 @@ if (!("ncsedtRestorableObj" in window)) {
     };
 
     ncSimpleHtmlEditor.prototype.resetLinearHistory = function () {
-        if (this.historyRedo.length && this.options.linearHistory) {
+        if (this.historyRedo.length && this.options.usesLinearUndoHistory) {
             this.historyRedo = [];
         }
     }
@@ -1375,7 +1190,7 @@ if (!("ncsedtRestorableObj" in window)) {
                 var mutation = this.historyUndo.pop();
                 this.historyRedo.push(mutation);
 
-                if (previousTime && mutation.time + _this.options.groupingHistory < previousTime) {
+                if (previousTime && mutation.time + _this.options.mutationGroupingWindowMs < previousTime) {
                     /**
                      * End group, restore and break
                      */
@@ -1391,7 +1206,7 @@ if (!("ncsedtRestorableObj" in window)) {
                 var mutation = this.historyRedo.pop();
                 this.historyUndo.push(mutation);
 
-                if (previousTime && mutation.time - _this.options.groupingHistory > previousTime) {
+                if (previousTime && mutation.time - _this.options.mutationGroupingWindowMs > previousTime) {
                     /**
                      * End group, restore and break
                      */
@@ -1467,7 +1282,7 @@ if (!("ncsedtRestorableObj" in window)) {
         var _this = this;
 
         this.editable.addEventListener('click', function (evt) {
-            if (_this.focused != evt.target) {
+            if (_this.focusedElement != evt.target) {
                 _this.setFocus(evt.target);
             }
         }, true);
@@ -1482,9 +1297,9 @@ if (!("ncsedtRestorableObj" in window)) {
         }, true);
 
         this.editable.addEventListener('dblclick', function () {
-            if (_this.focused.tagName == 'A' || _this.focused.parentElement.tagName == 'A') {
+            if (_this.focusedElement.tagName == 'A' || _this.focusedElement.parentElement.tagName == 'A') {
                 _this.command(_this.options.buttons.link);
-            } else if (_this.focused.tagName == 'IMG' || _this.focused.parentElement.tagName == 'IMG') {
+            } else if (_this.focusedElement.tagName == 'IMG' || _this.focusedElement.parentElement.tagName == 'IMG') {
                 _this.command(_this.options.buttons.image);
             } else {
                 _this.command(_this.options.buttons.code);
@@ -1659,7 +1474,7 @@ if (!("ncsedtRestorableObj" in window)) {
                 _this.dialogCode.close();
             }
 
-            _this.setFocus(_this.focused.querySelector('img'));
+            _this.setFocus(_this.focusedElement.querySelector('img'));
             _this.command(_this.options.buttons.image)
         });
     };
@@ -1669,23 +1484,23 @@ if (!("ncsedtRestorableObj" in window)) {
      */
 
     ncSimpleHtmlEditor.prototype.editCode = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.querySelector('img') || this.focused.parentElement.querySelector('img')) {
+        if (this.focusedElement.querySelector('img') || this.focusedElement.parentElement.querySelector('img')) {
             this.dialogCode.querySelector('#ncsedt-dialog-code .image').style.visibility = "visible";
         } else {
             this.dialogCode.querySelector('#ncsedt-dialog-code .image').style.visibility = "hidden";
         }
 
-        if (window.getSelection().toString() || this.focused.querySelector('a') || this.focused.parentElement.querySelector('a')) {
+        if (window.getSelection().toString() || this.focusedElement.querySelector('a') || this.focusedElement.parentElement.querySelector('a')) {
             this.dialogCode.querySelector('#ncsedt-dialog-code .link').style.visibility = "visible";
         } else {
             this.dialogCode.querySelector('#ncsedt-dialog-code .link').style.visibility = "hidden";
         }
 
-        this.dialogCode.querySelector('textarea.code').value = this.focused.innerHTML;
+        this.dialogCode.querySelector('textarea.code').value = this.focusedElement.innerHTML;
 
         if (!this.dialogCode.open) {
             this.dialogCode.showModal();
@@ -1693,7 +1508,7 @@ if (!("ncsedtRestorableObj" in window)) {
     };
 
     ncSimpleHtmlEditor.prototype.editCodeConfirm = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
@@ -1701,42 +1516,42 @@ if (!("ncsedtRestorableObj" in window)) {
             this.dialogCode.close();
         }
 
-        if (this.focused.isContentEditable) {
-            if (this.focused.innerHTML != this.dialogCode.querySelector('textarea.code').value) {
-                this.focused.innerHTML = this.dialogCode.querySelector('textarea.code').value;
+        if (this.focusedElement.isContentEditable) {
+            if (this.focusedElement.innerHTML != this.dialogCode.querySelector('textarea.code').value) {
+                this.focusedElement.innerHTML = this.dialogCode.querySelector('textarea.code').value;
             }
         }
     };
 
     ncSimpleHtmlEditor.prototype.editCodeParent = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.parentElement && this.focused.parentElement.isContentEditable) {
-            this.setFocus(this.focused.parentElement);
+        if (this.focusedElement.parentElement && this.focusedElement.parentElement.isContentEditable) {
+            this.setFocus(this.focusedElement.parentElement);
             this.editCode();
         }
     };
 
     ncSimpleHtmlEditor.prototype.editCodePrev = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focusedPrev && this.focusedPrev.isContentEditable) {
-            this.setFocus(this.focusedPrev);
+        if (this.focusedElementPrev && this.focusedElementPrev.isContentEditable) {
+            this.setFocus(this.focusedElementPrev);
             this.editCode();
         }
     };
 
     ncSimpleHtmlEditor.prototype.editCodeChild = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.firstElementChild && this.focused.firstElementChild.isContentEditable) {
-            this.setFocus(this.focused.firstElementChild);
+        if (this.focusedElement.firstElementChild && this.focusedElement.firstElementChild.isContentEditable) {
+            this.setFocus(this.focusedElement.firstElementChild);
             this.editCode();
         }
     };
@@ -1883,8 +1698,8 @@ if (!("ncsedtRestorableObj" in window)) {
         });
 
         document.querySelector("#ncsedt-dialog-image-file").addEventListener('change', function (e) {
-            if (this.files[0].size > _this.options.maxImageUpload) {
-                var inMb = (_this.options.maxImageUpload / 1024 / 1024).toFixed(1);
+            if (this.files[0].size > _this.options.maxImageSizeBytes) {
+                var inMb = (_this.options.maxImageSizeBytes / 1024 / 1024).toFixed(1);
                 alert("File is too big! " + inMb + "Mb. max. (Use .webp format)");
                 this.value = "";
 
@@ -1943,16 +1758,16 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editImage = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.parentElement.tagName == 'IMG') {
+        if (this.focusedElement.parentElement.tagName == 'IMG') {
             this.editImageParent();
         }
 
-        if (this.focused.firstElementChild && this.focused.lastElementChild) {
-            if (this.focused.firstElementChild.tagName == 'IMG' && this.focused.lastElementChild.tagName == 'IMG') {
+        if (this.focusedElement.firstElementChild && this.focusedElement.lastElementChild) {
+            if (this.focusedElement.firstElementChild.tagName == 'IMG' && this.focusedElement.lastElementChild.tagName == 'IMG') {
                 this.editImageChild();
             }
         }
@@ -1961,27 +1776,27 @@ if (!("ncsedtRestorableObj" in window)) {
         this.currentRange = this.currentSelection.getRangeAt(0);
         this.dialogImage.querySelector('#ncsedt-dialog-image-remove').checked = false;
 
-        if (this.focused.tagName == 'IMG') {
+        if (this.focusedElement.tagName == 'IMG') {
 
             /*
                 Edit existing
             */
-            var style = window.getComputedStyle(this.focused);
+            var style = window.getComputedStyle(this.focusedElement);
 
             this.dialogImage.querySelector('#ncsedt-dialog-image-title').innerHTML = 'Image (Edit)';
-            this.dialogImage.querySelector('.preview img').src = this.focused.src;
+            this.dialogImage.querySelector('.preview img').src = this.focusedElement.src;
 
-            if (this.focused.getAttribute('src').startsWith("data:image/")) {
+            if (this.focusedElement.getAttribute('src').startsWith("data:image/")) {
                 this.dialogImage.querySelector('#ncsedt-dialog-image-src').value = 'data:image/...'
             } else {
-                this.dialogImage.querySelector('#ncsedt-dialog-image-src').value = this.focused.getAttribute('src');
+                this.dialogImage.querySelector('#ncsedt-dialog-image-src').value = this.focusedElement.getAttribute('src');
             }
 
-            this.dialogImage.querySelector('#ncsedt-dialog-image-alt').value = this.focused.getAttribute('alt');
-            this.dialogImage.querySelector('#ncsedt-dialog-image-width').value = this.focused.style.width;
-            this.dialogImage.querySelector('#ncsedt-dialog-image-height').value = this.focused.style.height;
-            this.dialogImage.querySelector('#ncsedt-dialog-image-float').value = this.focused.style.float;
-            this.dialogImage.querySelector('#ncsedt-dialog-image-padding').value = this.focused.style.padding;
+            this.dialogImage.querySelector('#ncsedt-dialog-image-alt').value = this.focusedElement.getAttribute('alt');
+            this.dialogImage.querySelector('#ncsedt-dialog-image-width').value = this.focusedElement.style.width;
+            this.dialogImage.querySelector('#ncsedt-dialog-image-height').value = this.focusedElement.style.height;
+            this.dialogImage.querySelector('#ncsedt-dialog-image-float').value = this.focusedElement.style.float;
+            this.dialogImage.querySelector('#ncsedt-dialog-image-padding').value = this.focusedElement.style.padding;
             this.dialogImage.querySelector('#ncsedt-dialog-image .image-remove').style.visibility = "visible";
         } else {
 
@@ -2019,17 +1834,17 @@ if (!("ncsedtRestorableObj" in window)) {
             this.dialogImage.close();
         }
 
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (!this.focused.isContentEditable) {
+        if (!this.focusedElement.isContentEditable) {
             return;
         }
 
-        if (this.focused.tagName == 'IMG') {
+        if (this.focusedElement.tagName == 'IMG') {
             if (this.dialogImage.querySelector('#ncsedt-dialog-image-remove').checked) {
-                this.focused.outerHTML = this.focused.innerHTML;
+                this.focusedElement.outerHTML = this.focusedElement.innerHTML;
             } else {
                 this.editImageConfirmExisting();
             }
@@ -2061,12 +1876,12 @@ if (!("ncsedtRestorableObj" in window)) {
         var newheight = this.dialogImage.querySelector('#ncsedt-dialog-image-height').value;
         var newfloat = this.dialogImage.querySelector('#ncsedt-dialog-image-float').value;
         var newpadding = this.dialogImage.querySelector('#ncsedt-dialog-image-padding').value;
-        var oldsrc = this.focused.getAttribute('src');
-        var oldalt = this.focused.getAttribute('alt');
-        var oldwidth = this.focused.style.width;
-        var oldheight = this.focused.style.height;
-        var oldfloat = this.focused.style.float;
-        var oldpadding = this.focused.style.padding;
+        var oldsrc = this.focusedElement.getAttribute('src');
+        var oldalt = this.focusedElement.getAttribute('alt');
+        var oldwidth = this.focusedElement.style.width;
+        var oldheight = this.focusedElement.style.height;
+        var oldfloat = this.focusedElement.style.float;
+        var oldpadding = this.focusedElement.style.padding;
 
         if (newwidth && !isNaN(newwidth)) {
             newwidth += '%';
@@ -2086,32 +1901,32 @@ if (!("ncsedtRestorableObj" in window)) {
             }
 
             this.historyForcePush('src', newsrc);
-            this.focused.setAttribute('src', newsrc);
+            this.focusedElement.setAttribute('src', newsrc);
         }
 
         if (oldalt != newalt) {
             this.historyForcePush('alt', newalt);
-            this.focused.setAttribute('alt', newalt);
+            this.focusedElement.setAttribute('alt', newalt);
         }
 
         if (oldwidth != newwidth) {
-            this.focused.style.width = newwidth;
-            this.historyForcePush('style', this.focused.style.cssText);
+            this.focusedElement.style.width = newwidth;
+            this.historyForcePush('style', this.focusedElement.style.cssText);
         }
 
         if (oldheight != newheight) {
-            this.focused.style.height = newheight;
-            this.historyForcePush('style', this.focused.style.cssText);
+            this.focusedElement.style.height = newheight;
+            this.historyForcePush('style', this.focusedElement.style.cssText);
         }
 
         if (oldfloat != newfloat) {
-            this.focused.style.float = newfloat;
-            this.historyForcePush('style', this.focused.style.cssText);
+            this.focusedElement.style.float = newfloat;
+            this.historyForcePush('style', this.focusedElement.style.cssText);
         }
 
         if (oldpadding != newpadding) {
-            this.focused.style.padding = newpadding;
-            this.historyForcePush('style', this.focused.style.cssText);
+            this.focusedElement.style.padding = newpadding;
+            this.historyForcePush('style', this.focusedElement.style.cssText);
         }
     };
 
@@ -2174,18 +1989,18 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires focusedchange - When focus changes to parent
      */
     ncSimpleHtmlEditor.prototype.editImageParent = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.parentElement && this.focused.parentElement.isContentEditable) {
-            this.setFocus(this.focused.parentElement);
+        if (this.focusedElement.parentElement && this.focusedElement.parentElement.isContentEditable) {
+            this.setFocus(this.focusedElement.parentElement);
             this.editImage();
-        } else if (this.focused.parentElement.parentElement && this.focused.parentElement.parentElement.querySelector('img') && this.focused.parentElement.parentElement.isContentEditable) {
-            this.setFocus(this.focused.parentElement.parentElement.querySelector('img'));
+        } else if (this.focusedElement.parentElement.parentElement && this.focusedElement.parentElement.parentElement.querySelector('img') && this.focusedElement.parentElement.parentElement.isContentEditable) {
+            this.setFocus(this.focusedElement.parentElement.parentElement.querySelector('img'));
             this.editImage();
-        } else if (this.focused.previousElementSibling && this.focused.previousElementSibling.tagName == 'IMG' && this.focused.previousElementSibling.isContentEditable) {
-            this.setFocus(this.focused.previousElementSibling);
+        } else if (this.focusedElement.previousElementSibling && this.focusedElement.previousElementSibling.tagName == 'IMG' && this.focusedElement.previousElementSibling.isContentEditable) {
+            this.setFocus(this.focusedElement.previousElementSibling);
             this.editImage();
         }
 
@@ -2204,15 +2019,15 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires focusedchange - When focus changes to child
      */
     ncSimpleHtmlEditor.prototype.editImageChild = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.querySelector('img')) {
-            this.setFocus(this.focused.querySelector('img'));
+        if (this.focusedElement.querySelector('img')) {
+            this.setFocus(this.focusedElement.querySelector('img'));
             this.editImage();
-        } else if (this.focused.nextElementSibling && this.focused.nextElementSibling.tagName == 'IMG' && this.focused.nextElementSibling.isContentEditable) {
-            this.setFocus(this.focused.nextElementSibling);
+        } else if (this.focusedElement.nextElementSibling && this.focusedElement.nextElementSibling.tagName == 'IMG' && this.focusedElement.nextElementSibling.isContentEditable) {
+            this.setFocus(this.focusedElement.nextElementSibling);
             this.editImage();
         }
 
@@ -2347,41 +2162,41 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editLink = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
         this.currentSelection = window.getSelection();
         this.currentRange = this.currentSelection.getRangeAt(0);
 
-        if (this.focused.parentElement.tagName == 'A') {
+        if (this.focusedElement.parentElement.tagName == 'A') {
             this.editLinkParent();
         }
 
-        if (this.focused.firstElementChild && this.focused.lastElementChild) {
-            if (this.focused.firstElementChild.tagName == 'A' && this.focused.lastElementChild.tagName == 'A' && !this.currentSelection.toString()) {
+        if (this.focusedElement.firstElementChild && this.focusedElement.lastElementChild) {
+            if (this.focusedElement.firstElementChild.tagName == 'A' && this.focusedElement.lastElementChild.tagName == 'A' && !this.currentSelection.toString()) {
                 this.editLinkChild();
             }
         }
 
-        if (this.focused.tagName == 'IMG' || (this.focused.firstElementChild && this.focused.firstElementChild.tagName == 'IMG')) {
+        if (this.focusedElement.tagName == 'IMG' || (this.focusedElement.firstElementChild && this.focusedElement.firstElementChild.tagName == 'IMG')) {
             this.dialogLink.querySelector('#ncsedt-dialog-link .image').style.visibility = "visible";
         } else {
             this.dialogLink.querySelector('#ncsedt-dialog-link .image').style.visibility = "hidden";
         }
 
-        if (this.focused.tagName == 'A') {
+        if (this.focusedElement.tagName == 'A') {
 
             /*
                 Edit existing
             */
             this.dialogLink.querySelector('#ncsedt-dialog-link-title').innerHTML = 'Link (Edit)';
-            this.dialogLink.querySelector('#ncsedt-dialog-link-anchor').value = this.focused.innerHTML;
-            this.dialogLink.querySelector('#ncsedt-dialog-link-href').value = this.focused.getAttribute("href");
+            this.dialogLink.querySelector('#ncsedt-dialog-link-anchor').value = this.focusedElement.innerHTML;
+            this.dialogLink.querySelector('#ncsedt-dialog-link-href').value = this.focusedElement.getAttribute("href");
             this.dialogLink.querySelector('#ncsedt-dialog-link-remove').checked = false;
             this.dialogLink.querySelector('#ncsedt-dialog-link .link-remove').style.visibility = "visible";
 
-            if (this.focused.getAttribute('target') == '_blank') {
+            if (this.focusedElement.getAttribute('target') == '_blank') {
                 this.dialogLink.querySelector('#ncsedt-dialog-link-target').checked = true;
             } else {
                 this.dialogLink.querySelector('#ncsedt-dialog-link-target').checked = false;
@@ -2394,7 +2209,7 @@ if (!("ncsedtRestorableObj" in window)) {
             if (this.currentSelection.anchorNode.nodeType == Node.TEXT_NODE && this.currentSelection.toString()) {
                 var anchor = this.currentSelection;
             } else {
-                var anchor = this.focused.innerHTML || this.focused.outerHTML;
+                var anchor = this.focusedElement.innerHTML || this.focusedElement.outerHTML;
             }
 
             this.dialogLink.querySelector('#ncsedt-dialog-link-title').innerHTML = 'Link (CREATE)';
@@ -2428,17 +2243,17 @@ if (!("ncsedtRestorableObj" in window)) {
             this.dialogLink.close();
         }
 
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (!this.focused.isContentEditable) {
+        if (!this.focusedElement.isContentEditable) {
             return;
         }
 
-        if (this.focused.tagName == 'A') {
+        if (this.focusedElement.tagName == 'A') {
             if (this.dialogLink.querySelector('#ncsedt-dialog-link-remove').checked) {
-                this.focused.outerHTML = this.focused.innerHTML;
+                this.focusedElement.outerHTML = this.focusedElement.innerHTML;
             } else {
                 this.editLinkConfirmExisting();
             }
@@ -2465,16 +2280,16 @@ if (!("ncsedtRestorableObj" in window)) {
         var newanchor = this.dialogLink.querySelector('#ncsedt-dialog-link-anchor').value;
         var newurl = this.dialogLink.querySelector('#ncsedt-dialog-link-href').value;
 
-        var oldtarget = this.focused.getAttribute('target');
-        var oldanchor = this.focused.innerHTML;
-        var oldurl = this.focused.getAttribute('href');
+        var oldtarget = this.focusedElement.getAttribute('target');
+        var oldanchor = this.focusedElement.innerHTML;
+        var oldurl = this.focusedElement.getAttribute('href');
 
         if (oldtarget != newtarget || oldanchor != newanchor || oldurl != newurl) {
             this.historyForcePush('href', newurl);
             this.historyForcePush('target', newtarget);
-            this.focused.innerHTML = newanchor;
-            this.focused.setAttribute('href', newurl);
-            this.focused.setAttribute('target', newtarget);
+            this.focusedElement.innerHTML = newanchor;
+            this.focusedElement.setAttribute('href', newurl);
+            this.focusedElement.setAttribute('target', newtarget);
         }
     };
 
@@ -2501,12 +2316,12 @@ if (!("ncsedtRestorableObj" in window)) {
             newlink.setAttribute('href', newurl);
             newlink.setAttribute('target', newtarget);
 
-            if (this.focused.contains(this.currentRange.commonAncestorContainer)) {
+            if (this.focusedElement.contains(this.currentRange.commonAncestorContainer)) {
                 this.currentRange.surroundContents(newlink);
                 newlink.innerHTML = newanchor;
             } else {
                 newlink.innerHTML = newanchor
-                this.focused.outerHTML = newlink.outerHTML;
+                this.focusedElement.outerHTML = newlink.outerHTML;
             }
         }
     };
@@ -2524,12 +2339,12 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires focusedchange - When focus changes to parent
      */
     ncSimpleHtmlEditor.prototype.editLinkParent = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.parentElement && this.focused.parentElement.isContentEditable) {
-            this.setFocus(this.focused.parentElement);
+        if (this.focusedElement.parentElement && this.focusedElement.parentElement.isContentEditable) {
+            this.setFocus(this.focusedElement.parentElement);
             this.editLink();
         }
     };
@@ -2546,12 +2361,12 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires focusedchange - When focus changes to previous element
      */
     ncSimpleHtmlEditor.prototype.editLinkPrev = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focusedPrev && this.focusedPrev.isContentEditable) {
-            this.setFocus(this.focusedPrev);
+        if (this.focusedElementPrev && this.focusedElementPrev.isContentEditable) {
+            this.setFocus(this.focusedElementPrev);
             this.editLink();
         }
     };
@@ -2569,12 +2384,12 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires focusedchange - When focus changes to child
      */
     ncSimpleHtmlEditor.prototype.editLinkChild = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
-        if (this.focused.firstElementChild && this.focused.firstElementChild.isContentEditable) {
-            this.setFocus(this.focused.firstElementChild);
+        if (this.focusedElement.firstElementChild && this.focusedElement.firstElementChild.isContentEditable) {
+            this.setFocus(this.focusedElement.firstElementChild);
             this.editLink();
         }
     };
@@ -2677,7 +2492,7 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editHead = function () {
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
@@ -2714,7 +2529,7 @@ if (!("ncsedtRestorableObj" in window)) {
             this.dialogHead.close();
         }
 
-        if (!this.editEnable) {
+        if (!this.editingEnabled) {
             return;
         }
 
