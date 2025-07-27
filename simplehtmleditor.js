@@ -261,8 +261,7 @@ if (!("ncsedtRestorableObj" in window)) {
              * Determines which features are available and how they are presented
              * @type {Array<string>}
              */
-            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy',
-                     'paste', 'code', 'link', 'image', 'head', 'save'],
+            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
 
             /**
              * Toolbar button configurations
@@ -373,6 +372,39 @@ if (!("ncsedtRestorableObj" in window)) {
                     title: 'Selenct down',
                     disabled: function () { return _this.isDownButtonDisabled() },
                     action: function () { _this.down() }
+                },
+                /**
+                 * Previous Sibling Button Configuration
+                 * Moves selection to previous sibling element
+                 * @property {string} name - Button identifier
+                 * @property {string} icon - Button icon (base64)
+                 * @property {string} title - Button tooltip
+                 * @property {Function} disabled - Returns true if can't move to previous sibling
+                 * @property {Function} action - Button click handler
+                 */
+                previous: {
+                    name: 'previous',
+                    icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABGklEQVRoQ+1XOQ7CMBBMREFBwQPgWdRU/IqGf1DxmVDRUFBQAOsikmUFa61ZgkaaSC6i7I7nSGyn78ivnpx/JwH/TlAJKAHQAb1CoIFwuxKALQQBlABoINyuBAoL93Z/tnGFrXUCRCaQyJ9sbG0MzvnhsigBI/mEt2ETkJNPjlIJKMlTCZgiTyPgG3kKAQdjeawsHzt7dgOXl7f1XzwYratQzXnPfN6alxUuPMUtAuYin3g/bSyZBTyM/CpaQMKbK4W7zbX+hQCPCIqNjHoZHZOl3shqIiheofz7oj7MTSVBl0ApgvKHJhdB+0vp2XfCa1rOQuGTRwBKQISLCIYSQNyL6FUCES4iGEoAcS+iVwlEuIhgKAHEvYjeD0hbKjFLoDaVAAAAAElFTkSuQmCC',
+                    title: 'Select previous sibling',
+                    disabled: function () { return _this.isPreviousButtonDisabled() },
+                    action: function () { _this.previous() }
+                },
+
+                /**
+                 * Next Sibling Button Configuration
+                 * Moves selection to next sibling element
+                 * @property {string} name - Button identifier
+                 * @property {string} icon - Button icon (base64)
+                 * @property {string} title - Button tooltip
+                 * @property {Function} disabled - Returns true if can't move to next sibling
+                 * @property {Function} action - Button click handler
+                 */
+                next: {
+                    name: 'next',
+                    icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABHklEQVRoQ+2WQQrCUAxE25WXEEHwEh7MnaAuXOmdPIggiAfRZK82k/yQX5hCV02m82bk13GY+TXO3P9AgOoG2QAbCCbAn1AwwPA6GwhHGBRgA8EAw+tswBHhQXZOjr2vKxUNvMXJTu5rC4gqAPXeBKISoAlENUAYogeAEEQvAG4IBGArb1k0ODlufzT28uyMvAMBeInwEhF3zkKnEwLwFEMrpyl0zQyBADzExRp14pzXL/XRsosA3EVwYxENzugXWhswXQiASdAwpH8lfl2QeRXpCQA23xOAy3wvAG7zPQCEzFcDhM1XAjQxXwVwQc75qWO54hid8gQ9JwAUV8IwG0gIFZJkA1BcCcNsICFUSJINQHElDLOBhFAhydk38AELbCYxoaSv8QAAAABJRU5ErkJggg==',
+                    title: 'Select next sibling',
+                    disabled: function () { return _this.isNextButtonDisabled() },
+                    action: function () { _this.next() }
                 },
                 /**
                  * Cut Button Configuration
@@ -921,6 +953,42 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
+
+    /**
+     * Focus on previous sibling or previous parent sibling
+     */
+    ncSimpleHtmlEditor.prototype.previous = function() {
+        if (this.focusedElement.previousElementSibling) {
+            this.setFocus(this.focusedElement.previousElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        } else if (this.focusedElement.parentElement.previousElementSibling) {
+            this.setFocus(this.focusedElement.parentElement.previousElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        } else if (this.focusedElement.parentElement.parentElement &&
+                this.focusedElement.parentElement.parentElement.previousElementSibling) {
+            this.setFocus(this.focusedElement.parentElement.parentElement.previousElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        }
+    };
+
+
+    /**
+     * Focus on next sibling or next parent sibling
+     */
+    ncSimpleHtmlEditor.prototype.next = function() {
+        if (this.focusedElement.nextElementSibling) {
+            this.setFocus(this.focusedElement.nextElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        } else if (this.focusedElement.parentElement.nextElementSibling) {
+            this.setFocus(this.focusedElement.parentElement.nextElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        } else if (this.focusedElement.parentElement.parentElement &&
+                this.focusedElement.parentElement.parentElement.nextElementSibling) {
+            this.setFocus(this.focusedElement.parentElement.parentElement.nextElementSibling);
+            this.focusedElement.scrollIntoView({ block: "center" });
+        }
+    };
+
     /**
      * Current focus to clipboard
      */
@@ -989,6 +1057,32 @@ if (!("ncsedtRestorableObj" in window)) {
 
     ncSimpleHtmlEditor.prototype.canMoveDown = function () {
         return this.focusedElement.firstElementChild;
+    };
+
+    ncSimpleHtmlEditor.prototype.isPreviousButtonDisabled = function() {
+        return !this.editingEnabled || !this.canMovePrevious();
+    };
+
+    ncSimpleHtmlEditor.prototype.canMovePrevious = function() {
+        return this.focusedElement.previousElementSibling ||
+            (this.focusedElement.parentElement &&
+                this.focusedElement.parentElement.previousElementSibling) ||
+            (this.focusedElement.parentElement &&
+                this.focusedElement.parentElement.parentElement &&
+                this.focusedElement.parentElement.parentElement.previousElementSibling);
+    };
+
+    ncSimpleHtmlEditor.prototype.isNextButtonDisabled = function() {
+        return !this.editingEnabled || !this.canMoveNext();
+    };
+
+    ncSimpleHtmlEditor.prototype.canMoveNext = function() {
+        return this.focusedElement.nextElementSibling ||
+            (this.focusedElement.parentElement &&
+                this.focusedElement.parentElement.nextElementSibling) ||
+            (this.focusedElement.parentElement &&
+                this.focusedElement.parentElement.parentElement &&
+                this.focusedElement.parentElement.parentElement.nextElementSibling);
     };
 
     ncSimpleHtmlEditor.prototype.isCutButtonDisabled = function () {
