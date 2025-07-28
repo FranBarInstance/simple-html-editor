@@ -1514,8 +1514,8 @@ if (!("ncsedtRestorableObj" in window)) {
             '   </div>' +
             '   <div class="ncsedt-btns">' +
             '       <div class="ncsedt-btns-left">' +
-            '           <button type="button" class="sbutton parent">&Uparrow;</button>' +
-            '           <button type="button" class="sbutton child">&Downarrow;</button>' +
+            '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
+            '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
             // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
             '           <button type="button" class="sbutton link"><img class="" src="' + this.options.buttons.link.icon + '" title="Edit link"></button>' +
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
@@ -1719,10 +1719,10 @@ if (!("ncsedtRestorableObj" in window)) {
             '   </div>' +
             '   <div class="ncsedt-btns">' +
             '       <div class="ncsedt-btns-left">' +
-            '           <button type="button" class="sbutton parent">&Uparrow;</button>' +
-            '           <button type="button" class="sbutton child">&Downarrow;</button>' +
+            '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
+            '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
             // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
-            '           <button type="button" class="sbutton code"><img class="" src="' + this.options.buttons.code.icon + '" title="Edit code"></button>' +
+            '           <button type="button" class="sbutton code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
             '           <button type="button" class="sbutton link"><img class="" src="' + this.options.buttons.link.icon + '" title="Edit link"></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
@@ -2172,8 +2172,8 @@ if (!("ncsedtRestorableObj" in window)) {
             '   </div>' +
             '   <div class="ncsedt-btns">' +
             '       <div class="ncsedt-btns-left">' +
-            '           <button type="button" class="sbutton parent">&Uparrow;</button>' +
-            '           <button type="button" class="sbutton child">&Downarrow;</button>' +
+            '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
+            '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
             // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
             '           <button type="button" class="sbutton code"><img class="" src="' + this.options.buttons.code.icon + '" title="Edit code"></button>' +
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
