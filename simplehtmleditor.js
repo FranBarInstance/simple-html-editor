@@ -261,7 +261,7 @@ if (!("ncsedtRestorableObj" in window)) {
              * Determines which features are available and how they are presented
              * @type {Array<string>}
              */
-            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
+            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
 
             /**
              * Toolbar button configurations
