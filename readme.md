@@ -211,7 +211,7 @@ var options = {
     /*
      * Add the button at the end of the toolbar
      */
-    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save', 'help']
+    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github', 'help']
 };
 
 var editor = new ncSimpleHtmlEditor(options);
