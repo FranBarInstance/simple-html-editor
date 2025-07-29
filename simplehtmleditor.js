@@ -239,6 +239,46 @@ if (!("ncsedtRestorableObj" in window)) {
             mutationGroupingWindowMs: 200,
 
             /**
+             * IA models
+             */
+            aiBackends: {
+                ollama: {
+                    enabled: true,
+                    url: 'http://localhost:11434/api/generate',
+                    model: 'qwen2.5-coder:7b'
+                },
+                openrouter: {
+                    enabled: false,
+                    url: 'https://openrouter.ai/api/v1/chat/completions',
+                    model: 'qwen/qwen-2.5-coder-32b-instruct:free'
+                },
+                anthropic: {
+                    enabled: false,
+                    url: 'https://api.anthropic.com/v1/messages',
+                    model: 'claude-3-opus-20240229'
+                },
+                azure: {
+                    enabled: false,
+                    url: '',
+                    model: ''
+                },
+                gemini: {
+                    enabled: false,
+                    url: 'https://generativelanguage.googleapis.com/v1beta/models/',
+                    model: 'gemini-pro'
+                },
+                openai: {
+                    enabled: false,
+                    url: 'https://api.openai.com/v1/chat/completions',
+                    model: 'gpt-4-turbo'
+                }
+            },
+
+            additionalPrompts: {
+                "only replacement": '(INSTRUCTIONS IMPORTANT: only replacements, just the -HTML code- to be replaced, without markdown or anything else.)'
+            },
+
+            /**
              * Number of columns to display in the toolbar
              * When null, uses the default layout defined in CSS
              * @type {number|null}
@@ -261,7 +301,7 @@ if (!("ncsedtRestorableObj" in window)) {
              * Determines which features are available and how they are presented
              * @type {Array<string>}
              */
-            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
+            toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github'],
 
             /**
              * Toolbar button configurations
@@ -519,6 +559,47 @@ if (!("ncsedtRestorableObj" in window)) {
                     title: 'Save',
                     disabled: function () { return _this.isSaveButtonDisabled() },
                     action: function () { _this.save() }
+                },
+                /**
+                 * Agent Button Configuration
+                 * Opens dialog to interact with AI Agent
+                 * @property {string} name - Button identifier
+                 * @property {string} icon - Button icon (base64)
+                 * @property {string} title - Button tooltip
+                 * @property {Function} disabled - Returns true if not in edit mode
+                 * @property {Function} action - Button click handler
+                 */
+                agent: {
+                    name: 'agent',
+                    icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMnptMCAyYzQuNDE4IDAgOCAzLjU4MiA4IDhzLTMuNTgyIDgtOCA4LTgtMy41ODItOC04IDMuNTgyLTggOC04eiIvPjxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xMiA2Yy0zLjMxNCAwLTYgMi42ODYtNiA2czIuNjg2IDYgNiA2IDYtMi42ODYgNi02LTIuNjg2LTYtNi02em0wIDJjMi4yMDkgMCA0IDEuNzkxIDQgNHMtMS43OTEgNC00IDQtNC0xLjc5MS00LTQgMS43OTEtNCA0LTR6Ii8+PC9zdmc+',
+                    title: 'AI Agent',
+                    disabled: function () { return _this.isAgentButtonDisabled() },
+                    action: function () { _this.editAgent() }
+                },
+                /**
+                 * github Button Configuration
+                 * Triggers save operation for current content
+                 * @property {string} name - Button identifier
+                 * @property {string} icon - Normal state icon (base64)
+                 * @property {string} icon2 - Processing state icon (base64)
+                 * @property {string} title - Button tooltip
+                 * @property {Function} disabled - Returns true if no changes to save
+                 * @property {Function} action - Button click handler
+                 */
+                github: {
+                    name: 'github',
+                    icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADIklEQVRo3u2Y20tUQRzHPyrdzFKoxUv5WlGhkCX10JUgejQquzxE/0IQRBYVBAoSJSZmvfYqFpQEQXSBoCihx+olSreLRmDXLWt7mFl2nT0zZ845c45B+4UB2d+c7+/7nRln5jdQQgn/N8oc8VQArcBWoAVYAdQDVTL+BUgDz4GnwB3gMfBnpgegEegCRoFswPYG6ASWzoTwFDAAZEIIV1sG6AcWJyX+APDRgXC1TQD74hQ+C7gSg3C1XZK5nKISGE5AfK7dlDmdjXyS4nPtNjDbhYEklo2u9UcVf1BDfAHYBfQB7yMIfAdclFw9mj7tYcWn0O82Kwv6zQM6gM8yNoU4sB4ilt6w/PuFjGVl3w75bQ6rNLnGgUVhDAxoCL9p+jcAG8mfvl6okn0aNPHvmpx9QcU3oj+kJsKMhiV0M/6DgCd2F/p1+5vpU+8KlZJbl7fTlqgC/7tNUwwGmnxyvgbKbYg2+BANxCA+h8s+uVttSI4bCCYJuSNYIkV+N/Nqx9QPvKZkrSHBEOIfLS6MA9cN8RYbA8sMBPdiFJ/DXUNsuY2BegPBWAIGRg2xIm1eBkwH0UxjgY2BKQNBElVTyhAr0uZlwHTS1iVgwLSEi7R5GRg3EGxKwMBmQ+yDjYFXBoJtOKyUPDAf2GKIF2nzMvDAQFAFHInRwFHMA3TfhqQZ83E+CayOQXwz4gEs8h2sHPHoZCJKy4SusAZRnTm5zAGcUD7+BLxUfssAZ4HaCMKXAN3ALx/xWcQdzRq1TC9oeuXv6xDlomrkFuKitRNYaOCtAdqAk4j3URvhWUSlZjofPNGrkFxF1AqN6Av5Z8BcA+ccYMRStPqIEBjViLVeSHRGxnaQL9AL22EL3vaA4sd8ZtWIPQrZV/Kn8XbgEfATccDcwG6aGwIa2B1WfA7nFMLzEfkqAojvjioexNY1VEA6BRyKyGkjfpAA26YfKoFrSoJhYD+wHlEptTk0MEgMLx9lwGmfxC4M9OBw5L2wl+LdyYWBNGLTSAQ1iOc+9fUujIEM4oG3OinxhagDTiFG70mA70aAt4glmUSRVEIJJfyr+AubsTWHiHv2sgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yOVQxNjozMzoyNCswMDowMAydbHEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjlUMTY6MzM6MjQrMDA6MDB9wNTNAAAAAElFTkSuQmCC',
+                    title: 'Github',
+                    disabled: function () { return false },
+                    action: function () {
+                        var link = document.createElement('a');
+                        var ncsedt = document.querySelector('#ncsedt-implement');
+
+                        link.setAttribute('href', 'https://github.com/FranBarInstance/simple-html-editor');
+                        link.setAttribute('target', '_blank');
+                        ncsedt.appendChild(link);
+                        link.click();
+                    }
                 }
             },
             draggerIcon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAA+klEQVRo3u3ZUQ7CIBAE0NGDGOL9r+SHJ6k/bWJIkV3KDrvCJHx3XgwsrcDKiuukfYXMA8ALwBvAc3SZ1vLbvkIh8vKhEKXyIRC18q4R0vIuEdryrhCt5bshboa4jfGsuyGAkukAidDJ7BnHhpUm37DSmJxO36eNNaD7EZsflQxAN8TZOc8CXEaUhhQT0Iz4NWHZADXi6vXAaokQXssXEeEn8Vm8/grd9oE0wzZxDcEGdJ8FTIDJNGYBzO5DDIDpjdQaYPqynwgAzTPWS/3wTA/QTOy/+zrnonwrwlV5LcJleSnCdfkaIkT5EiJU+RwRsvyRhMB/dK9MkQ9aiYmYo9JGZAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxMjoyOTo1MSswMDowMJ8FU+4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6Mjk6NTErMDA6MDDuWOtSAAAAAElFTkSuQmCC'
@@ -526,6 +607,10 @@ if (!("ncsedtRestorableObj" in window)) {
 
         this.options = this.deepMerge(defaults, options);
         this.options.mutationGroupingWindowMs = this.options.mutationGroupingWindowMs / TIME_SCALE_FACTOR;
+
+        this.sessionConfig = {
+            aiBackends: JSON.parse(JSON.stringify(this.options.aiBackends))
+        };
 
         /*
             <div id="ncsedt-implement">:
@@ -717,17 +802,23 @@ if (!("ncsedtRestorableObj" in window)) {
         this.dialogImage = this.renderDialogImage();
         this.dialogLink = this.renderDialogLink();
         this.dialogHead = this.renderDialogHead();
+        this.dialogAgent = this.renderDialogAgent();
+        this.dialogConfig = this.renderConfigDialog();
         this.movable('#ncsedt-toolbar', '#ncsedt-toolbar-dragger');
         this.movable('#ncsedt-dialog-code', '#ncsedt-dialog-code .dragger');
         this.movable('#ncsedt-dialog-image', '#ncsedt-dialog-image .dragger');
         this.movable('#ncsedt-dialog-link', '#ncsedt-dialog-link .dragger');
         this.movable('#ncsedt-dialog-head', '#ncsedt-dialog-head .dragger');
+        this.movable('#ncsedt-dialog-agent', '#ncsedt-dialog-agent .dragger');
+        this.movable('#ncsedt-dialog-config', '#ncsedt-dialog-config .dragger');
         this.setEvents();
         this.setEventsToolbar();
         this.setEventsDialogCode();
         this.setEventsDialogImage();
         this.setEventsDialogLink();
         this.setEventsDialogHead();
+        this.setEventsDialogAgent();
+        this.setupConfigDialogEvents();
         document.dispatchEvent(new Event("editorstart"));
     };
 
@@ -957,7 +1048,7 @@ if (!("ncsedtRestorableObj" in window)) {
     /**
      * Focus on previous sibling or previous parent sibling
      */
-    ncSimpleHtmlEditor.prototype.previous = function() {
+    ncSimpleHtmlEditor.prototype.previous = function () {
         if (this.focusedElement.previousElementSibling) {
             this.setFocus(this.focusedElement.previousElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
@@ -965,7 +1056,7 @@ if (!("ncsedtRestorableObj" in window)) {
             this.setFocus(this.focusedElement.parentElement.previousElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
         } else if (this.focusedElement.parentElement.parentElement &&
-                this.focusedElement.parentElement.parentElement.previousElementSibling) {
+            this.focusedElement.parentElement.parentElement.previousElementSibling) {
             this.setFocus(this.focusedElement.parentElement.parentElement.previousElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
         }
@@ -975,7 +1066,7 @@ if (!("ncsedtRestorableObj" in window)) {
     /**
      * Focus on next sibling or next parent sibling
      */
-    ncSimpleHtmlEditor.prototype.next = function() {
+    ncSimpleHtmlEditor.prototype.next = function () {
         if (this.focusedElement.nextElementSibling) {
             this.setFocus(this.focusedElement.nextElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
@@ -983,7 +1074,7 @@ if (!("ncsedtRestorableObj" in window)) {
             this.setFocus(this.focusedElement.parentElement.nextElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
         } else if (this.focusedElement.parentElement.parentElement &&
-                this.focusedElement.parentElement.parentElement.nextElementSibling) {
+            this.focusedElement.parentElement.parentElement.nextElementSibling) {
             this.setFocus(this.focusedElement.parentElement.parentElement.nextElementSibling);
             this.focusedElement.scrollIntoView({ block: "center" });
         }
@@ -1018,6 +1109,14 @@ if (!("ncsedtRestorableObj" in window)) {
             this.focusedElement.insertAdjacentHTML('afterend', this.clipboard);
         }
     };
+
+
+
+    ncSimpleHtmlEditor.prototype.isAgentButtonDisabled = function () {
+        return !this.editingEnabled;
+    };
+
+
 
     ncSimpleHtmlEditor.prototype.isEditButtonDisabled = function () {
         return false;
@@ -1059,11 +1158,11 @@ if (!("ncsedtRestorableObj" in window)) {
         return this.focusedElement.firstElementChild;
     };
 
-    ncSimpleHtmlEditor.prototype.isPreviousButtonDisabled = function() {
+    ncSimpleHtmlEditor.prototype.isPreviousButtonDisabled = function () {
         return !this.editingEnabled || !this.canMovePrevious();
     };
 
-    ncSimpleHtmlEditor.prototype.canMovePrevious = function() {
+    ncSimpleHtmlEditor.prototype.canMovePrevious = function () {
         return this.focusedElement.previousElementSibling ||
             (this.focusedElement.parentElement &&
                 this.focusedElement.parentElement.previousElementSibling) ||
@@ -1072,11 +1171,11 @@ if (!("ncsedtRestorableObj" in window)) {
                 this.focusedElement.parentElement.parentElement.previousElementSibling);
     };
 
-    ncSimpleHtmlEditor.prototype.isNextButtonDisabled = function() {
+    ncSimpleHtmlEditor.prototype.isNextButtonDisabled = function () {
         return !this.editingEnabled || !this.canMoveNext();
     };
 
-    ncSimpleHtmlEditor.prototype.canMoveNext = function() {
+    ncSimpleHtmlEditor.prototype.canMoveNext = function () {
         return this.focusedElement.nextElementSibling ||
             (this.focusedElement.parentElement &&
                 this.focusedElement.parentElement.nextElementSibling) ||
@@ -1118,7 +1217,7 @@ if (!("ncsedtRestorableObj" in window)) {
      * @param {Object} options - Editor configuration options
      * @throws {Error} If options are invalid
      */
-    ncSimpleHtmlEditor.prototype.validateOptions = function(options) {
+    ncSimpleHtmlEditor.prototype.validateOptions = function (options) {
         if (options.editableContentSelector && typeof options.editableContentSelector !== 'string') {
             throw new Error('Option "editable" must be a string selector');
         }
@@ -1138,6 +1237,31 @@ if (!("ncsedtRestorableObj" in window)) {
 
         if (options.maxImageSizeBytes) {
             options.maxImageSizeBytes = Math.min(options.maxImageSizeBytes, MAX_ALLOWED_IMAGE_SIZE_BYTES);
+        }
+
+        if (options.aiBackends) {
+            const validBackends = ['ollama', 'openrouter', 'anthropic', 'azure', 'gemini', 'openai'];
+
+            for (const backend of validBackends) {
+                if (options.aiBackends[backend]) {
+                    if (typeof options.aiBackends[backend].enabled !== 'boolean') {
+                        options.aiBackends[backend].enabled = false;
+                    }
+
+                    // Validar configuraciones requeridas
+                    if (backend === 'azure') {
+                        if (!options.aiBackends[backend].url || !options.aiBackends[backend].model) {
+                            options.aiBackends[backend].enabled = false;
+                            console.warn(`Azure backend disabled - URL and model must be configured`);
+                        }
+                    } else if (backend !== 'ollama') {
+                        if (!options.aiBackends[backend].apiKey) {
+                            options.aiBackends[backend].enabled = false;
+                            console.warn(`${backend} backend disabled - API key not configured`);
+                        }
+                    }
+                }
+            }
         }
     };
 
@@ -1494,6 +1618,803 @@ if (!("ncsedtRestorableObj" in window)) {
         return toolbar;
     };
 
+
+    ncSimpleHtmlEditor.prototype.renderConfigDialog = function () {
+        const dialogHTML = `
+    <dialog id="ncsedt-dialog-config" class="ncsedt-dialog" style="width: 500px;">
+        <div class="ncsedt-btns">
+            <div class="ncsedt-btns-left">
+                <button type="button" class="sbutton dragger">
+                    <img src="${this.options.draggerIcon}" title="Move">
+                    <span>Configure AI Backend</span>
+                </button>
+            </div>
+            <div class="ncsedt-btns-right">
+                <button type="button" class="sbutton cancel"> <b>&Cross;</b> </button>
+            </div>
+        </div>
+        <div class="body">
+            <div class="backend-selector">
+                <label>Backend:</label>
+                <select id="ncsedt-config-backend" class="sbutton">
+                    <option value="ollama">Ollama</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="azure">Azure</option>
+                    <option value="gemini">Gemini</option>
+                    <option value="openai">OpenAI</option>
+                </select>
+            </div>
+
+            <div id="ncsedt-config-fields">
+                <!-- Los campos se generarán dinámicamente -->
+            </div>
+        </div>
+        <div class="ncsedt-btns">
+            <div class="ncsedt-btns-right">
+                <button type="button" class="sbutton confirm">&check; Save</button>
+            </div>
+        </div>
+    </dialog>
+    `;
+
+        this.container.insertAdjacentHTML('beforeend', dialogHTML);
+        return document.getElementById('ncsedt-dialog-config');
+    };
+
+    ncSimpleHtmlEditor.prototype.setupConfigDialogEvents = function () {
+        const _this = this;
+        const dialog = document.getElementById('ncsedt-dialog-config');
+        const backendSelect = document.getElementById('ncsedt-config-backend');
+
+        // Generar campos de configuración cuando cambia el backend
+        backendSelect.addEventListener('change', function () {
+            _this.updateConfigFields(this.value);
+        });
+
+        // Botón cancelar
+        document.querySelector("#ncsedt-dialog-config .cancel").addEventListener('click', function () {
+            dialog.close();
+        });
+
+        // Botón guardar
+        document.querySelector("#ncsedt-dialog-config .confirm").addEventListener('click', function () {
+            _this.saveBackendConfig();
+            dialog.close();
+        });
+    };
+
+    ncSimpleHtmlEditor.prototype.updateConfigFields = function (backend) {
+        const fieldsContainer = document.getElementById('ncsedt-config-fields');
+        const config = this.sessionConfig.aiBackends[backend];
+
+        let fieldsHTML = `
+    <div class="config-field">
+        <label for="ncsedt-config-enabled">Enabled:</label>
+        <input id="ncsedt-config-enabled" type="checkbox" ${config.enabled ? 'checked' : ''}>
+    </div>
+    <div class="config-field">
+        <label for="ncsedt-config-url">API URL:</label>
+        <input id="ncsedt-config-url" type="text" value="${config.url || ''}" class="sbutton">
+    </div>
+    <div class="config-field">
+        <label for="ncsedt-config-model">Model:</label>
+        <input id="ncsedt-config-model" type="text" value="${config.model || ''}" class="sbutton">
+    </div>`;
+
+        // Solo mostrar campo API Key para backends que lo necesitan
+        if (backend !== 'ollama') {
+            fieldsHTML += `
+        <div class="config-field">
+            <label for="ncsedt-config-apikey">API Key:</label>
+            <input id="ncsedt-config-apikey" type="password" value="${config.apiKey || ''}" class="sbutton">
+        </div>`;
+        }
+
+        fieldsContainer.innerHTML = fieldsHTML;
+    };
+
+    ncSimpleHtmlEditor.prototype.saveBackendConfig = function () {
+        const backend = document.getElementById('ncsedt-config-backend').value;
+        const config = this.sessionConfig.aiBackends[backend];
+
+        config.enabled = document.getElementById('ncsedt-config-enabled').checked;
+        config.url = document.getElementById('ncsedt-config-url').value;
+        config.model = document.getElementById('ncsedt-config-model').value;
+
+        if (backend !== 'ollama') {
+            const apiKey = document.getElementById('ncsedt-config-apikey').value;
+            if (apiKey) {
+                config.apiKey = apiKey;
+            }
+        }
+
+        // Actualizar el selector en el diálogo de agente
+        this.updateBackendSelector();
+    };
+
+    ncSimpleHtmlEditor.prototype.updateBackendSelector = function () {
+        const selector = document.getElementById('ncsedt-dialog-agent-backend');
+        if (!selector) return;
+
+        Array.from(selector.options).forEach(option => {
+            const backend = option.value;
+            if (this.sessionConfig.aiBackends[backend]) {
+                option.disabled = !this.sessionConfig.aiBackends[backend].enabled;
+                option.style.opacity = this.sessionConfig.aiBackends[backend].enabled ? '1' : '0.5';
+            }
+        });
+    };
+
+
+
+    /**
+     * Renders the AI agent dialog with three textareas
+     */
+    ncSimpleHtmlEditor.prototype.renderDialogAgent = function () {
+        var dialogAgent =
+            '<dialog id="ncsedt-dialog-agent" class="ncsedt-dialog" style="width: 600px;">' +
+            '    <div class="ncsedt-btns">' +
+            '       <div class="ncsedt-btns-left">' +
+            '           <button type="button" class="sbutton dragger"><img class="" src="' + this.options.draggerIcon + '" title="Move"> <span>AI Agent</span></button>' +
+            '       </div>' +
+            '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton cancel"> <b>&Cross;</b> </button>' +
+            '       </div>' +
+            '   </div>' +
+            '   <div class="body">' +
+            '       <div class="code-section">' +
+            '           <label>Current Code:</label>' +
+            '           <textarea class="code sbutton" placeholder="Current HTML code"></textarea>' +
+            '       </div>' +
+            '       <div class="separator"></div>' +
+            '       <div class="prompt-section">' +
+            '           <label>AI Prompt:</label>' +
+            '           <textarea id="ncsedt-dialog-agent-prompt" class="prompt sbutton" placeholder="Enter your instructions for the AI..."></textarea>' +
+            '           <div class="ai-config">' +
+            '               <div class="backend-selector">' +
+            '                   <button id="ncsedt-dialog-agent-config" type="button" class="sbutton config-models">&#9881;</button>' +
+            '                   <select id="ncsedt-dialog-agent-backend" class="sbutton" style="padding: 8px">' +
+            '                       <option value="ollama">Ollama</option>' +
+            '                       <option value="openrouter">OpenRouter</option>' +
+            '                       <option value="anthropic">Anthropic</option>' +
+            '                       <option value="azure">Azure</option>' +
+            '                       <option value="gemini">Gemini</option>' +
+            '                       <option value="openai">OpenAI</option>' +
+            '                   </select>' +
+            '                   <select id="ncsedt-dialog-agent-additional-prompt" class="sbutton" style="padding: 8px">' +
+            '                       <option value="none">None</option>';
+
+        // Add additional prompt options
+        for (const [key, value] of Object.entries(this.options.additionalPrompts)) {
+            const selected = key === "only replacement" ? ' selected="selected"' : '';
+            dialogAgent += `<option value="${key}"${selected}>${key}</option>`;
+        }
+
+        dialogAgent += '                   </select>' +
+            '                   <button type="button" class="sbutton execute-ai">Go!</button>' +
+            '               </div>' +
+            '           </div>' +
+            '       </div>' +
+            '       <div class="separator"></div>' +
+            '       <div class="response-section">' +
+            '           <label>AI Response:</label>' +
+            '           <textarea id="ncsedt-dialog-agent-response" class="response sbutton" placeholder="AI response will appear here..." readonly></textarea>' +
+            '           <div class="ai-actions">' +
+            '               <button type="button" class="sbutton apply-response">Apply Changes</button>' +
+            '               <button type="button" class="sbutton copy-response">Copy</button>' +
+            '           </div>' +
+            '       </div>' +
+            '   </div>' +
+            '   <div class="ncsedt-btns">' +
+            '       <div class="ncsedt-btns-left">' +
+            '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
+            '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
+            '       </div>' +
+            '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
+            '       </div>' +
+            '   </div>' +
+            '</dialog>';
+
+        this.container.insertAdjacentHTML('beforeend', dialogAgent);
+        return document.getElementById('ncsedt-dialog-agent');
+    };
+
+
+    /**
+     * Sets up event handlers for the AI agent dialog
+     *
+     * @method setEventsDialogAgent
+     * @description Initializes all interactive elements in the agent dialog:
+     * - Cancel button to close dialog
+     * - Parent/Child navigation buttons
+     * - Execute AI button to send prompt
+     * - Confirm button to apply changes
+     */
+    ncSimpleHtmlEditor.prototype.setEventsDialogAgent = function () {
+        var _this = this;
+
+        var backends = ['ollama', 'openrouter', 'anthropic', 'azure', 'gemini', 'openai'];
+        var select = document.getElementById('ncsedt-dialog-agent-backend');
+
+        // Disable options for backends that aren't enabled or properly configured
+        backends.forEach(backend => {
+            var option = select.querySelector(`option[value="${backend}"]`);
+
+            if (!_this.options.aiBackends[backend].enabled ||
+                (backend !== 'ollama' && !_this.options.aiBackends[backend].apiKey) ||
+                (backend === 'azure' && (!_this.options.aiBackends.azure.url || !_this.options.aiBackends.azure.model))) {
+
+                option.disabled = true;
+                option.style.opacity = '0.5';
+            }
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .config-models").addEventListener('click', function () {
+            const backendSelect = document.getElementById('ncsedt-dialog-agent-backend');
+            const currentBackend = backendSelect.value;
+
+            const configDialog = document.getElementById('ncsedt-dialog-config');
+            const backendConfigSelect = document.getElementById('ncsedt-config-backend');
+
+            backendConfigSelect.value = currentBackend;
+            _this.updateConfigFields(currentBackend);
+
+            if (!configDialog.open) {
+                configDialog.showModal();
+            }
+        });
+
+        // Botones básicos
+        document.querySelector("#ncsedt-dialog-agent .cancel").addEventListener('click', function () {
+            _this.dialogAgent.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .confirm").addEventListener('click', function () {
+            _this.editAgentConfirm();
+        });
+
+        // Navegación
+        document.querySelector("#ncsedt-dialog-agent .parent").addEventListener('click', function () {
+            _this.editAgentParent();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .child").addEventListener('click', function () {
+            _this.editAgentChild();
+        });
+
+        // Acciones de IA
+        document.querySelector("#ncsedt-dialog-agent .execute-ai").addEventListener('click', function () {
+            _this.executeAIPrompt();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .apply-response").addEventListener('click', function () {
+            var response = document.getElementById('ncsedt-dialog-agent-response').value;
+            document.querySelector('#ncsedt-dialog-agent .code').value = response;
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .copy-response").addEventListener('click', function () {
+            var responseTextarea = document.getElementById('ncsedt-dialog-agent-response');
+            responseTextarea.select();
+            document.execCommand('copy');
+        });
+    };
+    /**
+     * Opens and initializes the AI agent dialog
+     *
+     * @method editAgent
+     * @description Handles the opening of agent dialog and initialization:
+     * - Preserves current selection state
+     * - Populates code area with current element's HTML
+     * - Shows dialog with current content
+     */
+    ncSimpleHtmlEditor.prototype.editAgent = function () {
+        if (!this.editingEnabled) {
+            return;
+        }
+
+        this.currentSelection = window.getSelection();
+        this.currentRange = this.currentSelection.getRangeAt(0);
+        this.dialogAgent.querySelector('textarea.code').value = this.focusedElement.innerHTML;
+
+        if (!this.dialogAgent.open) {
+            this.dialogAgent.showModal();
+        }
+    };
+
+    /**
+     * Confirms and applies changes from the agent dialog
+     *
+     * @method editAgentConfirm
+     * @description Commits the changes made in the agent dialog:
+     * - Updates element's HTML with edited code
+     * - Closes the dialog
+     */
+    ncSimpleHtmlEditor.prototype.editAgentConfirm = function () {
+        if (this.dialogAgent.open) {
+            this.dialogAgent.close();
+        }
+
+        if (!this.editingEnabled) {
+            return;
+        }
+
+        if (this.focusedElement.isContentEditable) {
+            if (this.focusedElement.innerHTML != this.dialogAgent.querySelector('textarea.code').value) {
+                this.focusedElement.innerHTML = this.dialogAgent.querySelector('textarea.code').value;
+            }
+        }
+    };
+
+    /**
+     * Moves focus to parent element in agent dialog
+     *
+     * @method editAgentParent
+     * @description Shifts editing focus to parent element
+     */
+    ncSimpleHtmlEditor.prototype.editAgentParent = function () {
+        if (!this.editingEnabled) {
+            return;
+        }
+
+        if (this.focusedElement.parentElement && this.focusedElement.parentElement.isContentEditable) {
+            this.setFocus(this.focusedElement.parentElement);
+            this.editAgent();
+        }
+    };
+
+    /**
+     * Moves focus to child element in agent dialog
+     *
+     * @method editAgentChild
+     * @description Shifts editing focus to first child element
+     */
+    ncSimpleHtmlEditor.prototype.editAgentChild = function () {
+        if (!this.editingEnabled) {
+            return;
+        }
+
+        if (this.focusedElement.firstElementChild && this.focusedElement.firstElementChild.isContentEditable) {
+            this.setFocus(this.focusedElement.firstElementChild);
+            this.editAgent();
+        }
+    };
+
+    /**
+     * Executes AI prompt with selected backend and displays results
+     *
+     * @method executeAIPrompt
+     * @description Sends prompt to selected AI backend (Ollama/OpenRouter):
+     * - Gets current code and user prompt
+     * - Constructs appropriate API request
+     * - Handles API response
+     * - Updates UI with AI response
+     * - Manages loading states and errors
+     */
+    ncSimpleHtmlEditor.prototype.executeAIPrompt = function () {
+        var prompt = document.getElementById('ncsedt-dialog-agent-prompt').value;
+        var backendSelect = document.getElementById('ncsedt-dialog-agent-backend');
+        var backend = backendSelect.options[backendSelect.selectedIndex].value;
+        var additionalPromptSelect = document.getElementById('ncsedt-dialog-agent-additional-prompt');
+        var additionalPromptKey = additionalPromptSelect.options[additionalPromptSelect.selectedIndex].value;
+        var currentCode = document.querySelector('#ncsedt-dialog-agent .code').value;
+        var responseTextarea = document.getElementById('ncsedt-dialog-agent-response');
+
+        console.log("Ejecutando executeAIPrompt");
+        console.log("Backend seleccionado:", backend);
+
+        // Validate input
+        if (!prompt.trim()) {
+            alert("Please enter a prompt for the AI");
+            return;
+        }
+
+        // Get additional prompt if selected
+        let fullPrompt = `Current HTML code:\n${currentCode}\n\nUser instructions:\n${prompt}`;
+        if (additionalPromptKey !== 'none' && this.options.additionalPrompts[additionalPromptKey]) {
+            fullPrompt += '\n\n' + this.options.additionalPrompts[additionalPromptKey];
+        }
+
+        // Show loading state
+        var executeBtn = document.querySelector('#ncsedt-dialog-agent .execute-ai');
+        var originalBtnText = executeBtn.textContent;
+        executeBtn.disabled = true;
+        executeBtn.textContent = "...";
+        responseTextarea.value = "Processing your request...";
+
+        try {
+            switch (backend) {
+                case 'ollama':
+                    this.callOllamaAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                case 'openrouter':
+                    this.callOpenRouterAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                case 'anthropic':
+                    this.callAnthropicAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                case 'azure':
+                    this.callAzureAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                case 'gemini':
+                    this.callGeminiAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                case 'openai':
+                    this.callOpenAIAPI(fullPrompt, responseTextarea, executeBtn, originalBtnText);
+                    break;
+                default:
+                    responseTextarea.value = "Selected backend not implemented";
+                    executeBtn.disabled = false;
+                    executeBtn.textContent = originalBtnText;
+            }
+        } catch (error) {
+            console.error("AI API Error:", error);
+            responseTextarea.value = "Error calling AI service: " + error.message;
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+        }
+    };
+
+    /**
+     * Calls Ollama local API to generate response
+     *
+     * @method callOllamaAPI
+     * @param {string} prompt - Full prompt including context
+     * @param {HTMLElement} responseTextarea - Textarea to display response
+     * @param {HTMLElement} executeBtn - Execute button to restore after completion
+     * @param {string} originalBtnText - Original button text to restore
+     */
+    ncSimpleHtmlEditor.prototype.callOllamaAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        if (!this.options.aiBackends.ollama.model) {
+            responseTextarea.value = "Ollama model not configured. Please set it in editor options.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+        var model = this.options.aiBackends.ollama.model;
+
+        fetch(this.options.aiBackends.ollama.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: model,
+                prompt: prompt,
+                stream: false,
+                options: {
+                    temperature: 0.7,
+                    top_p: 0.9
+                }
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Ollama API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                responseTextarea.value = data.response;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("Ollama API Error:", error);
+                responseTextarea.value = "Error calling Ollama API. Make sure Ollama is running locally.\nError: " + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+    };
+
+    /**
+     * Calls OpenRouter API to generate response
+     *
+     * @method callOpenRouterAPI
+     * @param {string} prompt - Full prompt including context
+     * @param {HTMLElement} responseTextarea - Textarea to display response
+     * @param {HTMLElement} executeBtn - Execute button to restore after completion
+     * @param {string} originalBtnText - Original button text to restore
+     */
+    ncSimpleHtmlEditor.prototype.callOpenRouterAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        const backend = 'openrouter';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "OpenRouter backend is disabled";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!config.apiKey) {
+            responseTextarea.value = "OpenRouter API key not configured. Please configure it first.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        fetch(config.url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${config.apiKey}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': window.location.href,
+                'X-Title': 'Simple HTML Editor'
+            },
+            body: JSON.stringify({
+                model: config.model,
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                temperature: 0.7,
+                max_tokens: 2000
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error?.message || `OpenRouter API error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    responseTextarea.value = data.choices[0].message.content;
+                } else {
+                    throw new Error("Unexpected response format from OpenRouter");
+                }
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("OpenRouter API Error:", error);
+                responseTextarea.value = "Error calling OpenRouter API:\n" + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+
+    };
+
+
+    // Método para Anthropic
+    ncSimpleHtmlEditor.prototype.callAnthropicAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        const backend = 'anthropic';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "Anthropic backend is disabled";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!config.apiKey) {
+            responseTextarea.value = "Anthropic API key not configured. Please configure it first.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        fetch(config.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': config.apiKey,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+                model: config.model,
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                max_tokens: 2000
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error?.message || `Anthropic API error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.content && data.content[0] && data.content[0].text) {
+                    responseTextarea.value = data.content[0].text;
+                } else {
+                    throw new Error("Unexpected response format from Anthropic");
+                }
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("Anthropic API Error:", error);
+                responseTextarea.value = "Error calling Anthropic API:\n" + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+    };
+
+    ncSimpleHtmlEditor.prototype.callAzureAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        const backend = 'azure';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "Azure backend is disabled";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!config.apiKey || !config.url || !config.model) {
+            responseTextarea.value = "Azure configuration incomplete. Please set URL, model and API key.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        fetch(config.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': config.apiKey
+            },
+            body: JSON.stringify({
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                max_tokens: 2000
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error?.message || `Azure API error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    responseTextarea.value = data.choices[0].message.content;
+                } else {
+                    throw new Error("Unexpected response format from Azure");
+                }
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("Azure API Error:", error);
+                responseTextarea.value = "Error calling Azure API:\n" + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+    };
+
+    ncSimpleHtmlEditor.prototype.callGeminiAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        const backend = 'gemini';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "Gemini backend is disabled";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!config.apiKey) {
+            responseTextarea.value = "Gemini API key not configured. Please configure it first.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        const url = `${config.url}${config.model}:generateContent?key=${config.apiKey}`;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error?.message || `Gemini API error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+                    responseTextarea.value = data.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Unexpected response format from Gemini");
+                }
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("Gemini API Error:", error);
+                responseTextarea.value = "Error calling Gemini API:\n" + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+    };
+
+    ncSimpleHtmlEditor.prototype.callOpenAIAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
+        const backend = 'openai';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "OpenAI backend is disabled";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        if (!config.apiKey) {
+            responseTextarea.value = "OpenAI API key not configured. Please configure it first.";
+            executeBtn.disabled = false;
+            executeBtn.textContent = originalBtnText;
+            return;
+        }
+
+        fetch(config.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${config.apiKey}`
+            },
+            body: JSON.stringify({
+                model: config.model,
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                temperature: 0.7,
+                max_tokens: 2000
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error?.message || `OpenAI API error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    responseTextarea.value = data.choices[0].message.content;
+                } else {
+                    throw new Error("Unexpected response format from OpenAI");
+                }
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            })
+            .catch(error => {
+                console.error("OpenAI API Error:", error);
+                responseTextarea.value = "Error calling OpenAI API:\n" + error.message;
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalBtnText;
+            });
+    };
+
+
     /**
      * Edit source code dialog
      */
@@ -1516,7 +2437,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '       <div class="ncsedt-btns-left">' +
             '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
             '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
-            // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
+            '           <button type="button" class="sbutton agent"><img class="" src="' + this.options.buttons.agent.icon + '" title="AI Agent"></button>' +
             '           <button type="button" class="sbutton link"><img class="" src="' + this.options.buttons.link.icon + '" title="Edit link"></button>' +
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
             '       </div>' +
@@ -1549,12 +2470,16 @@ if (!("ncsedtRestorableObj" in window)) {
             _this.editCodeChild();
         });
 
-        // document.querySelector("#ncsedt-dialog-code .previous").addEventListener('click', function() {
-        //     _this.editCodePrev();
-        // });
-
         document.querySelector("#ncsedt-dialog-code .confirm").addEventListener('click', function () {
             _this.editCodeConfirm();
+        });
+
+        document.querySelector("#ncsedt-dialog-code .agent").addEventListener('click', function () {
+            if (_this.dialogCode.open) {
+                _this.dialogCode.close();
+            }
+
+            _this.command(_this.options.buttons.agent)
         });
 
         document.querySelector("#ncsedt-dialog-code .link").addEventListener('click', function () {
@@ -1721,7 +2646,6 @@ if (!("ncsedtRestorableObj" in window)) {
             '       <div class="ncsedt-btns-left">' +
             '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
             '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
-            // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
             '           <button type="button" class="sbutton code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
             '           <button type="button" class="sbutton link"><img class="" src="' + this.options.buttons.link.icon + '" title="Edit link"></button>' +
             '       </div>' +
@@ -1768,10 +2692,6 @@ if (!("ncsedtRestorableObj" in window)) {
         document.querySelector("#ncsedt-dialog-image .child").addEventListener('click', function () {
             _this.editImageChild();
         });
-
-        // document.querySelector("#ncsedt-dialog-image .previous").addEventListener('click', function() {
-        //     _this.editImagePrev();
-        // });
 
         document.querySelector("#ncsedt-dialog-image .code").addEventListener('click', function () {
             if (_this.dialogImage.open) {
@@ -2174,7 +3094,6 @@ if (!("ncsedtRestorableObj" in window)) {
             '       <div class="ncsedt-btns-left">' +
             '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
             '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
-            // '           <button type="button" class="sbutton previous">&Leftarrow;</button>' +
             '           <button type="button" class="sbutton code"><img class="" src="' + this.options.buttons.code.icon + '" title="Edit code"></button>' +
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
             '       </div>' +
@@ -2216,10 +3135,6 @@ if (!("ncsedtRestorableObj" in window)) {
         document.querySelector("#ncsedt-dialog-link .child").addEventListener('click', function () {
             _this.editLinkChild();
         });
-
-        // document.querySelector("#ncsedt-dialog-link .previous").addEventListener('click', function() {
-        //     _this.editLinkPrev();
-        // });
 
         document.querySelector("#ncsedt-dialog-link .confirm").addEventListener('click', function () {
             _this.editLinkConfirm();

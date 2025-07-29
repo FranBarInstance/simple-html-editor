@@ -196,6 +196,16 @@ textarea.sbutton:active {
     filter: invert(30%);
 }
 
+#ncsedt-dialog-agent {
+    width: 720px;
+}
+
+#ncsedt-dialog-agent textarea {
+    width: 100%;
+    min-height: 50px;
+    height: 100%;
+}
+
 #ncsedt-dialog-code {
     width: 720px;
 }
