@@ -310,16 +310,6 @@ if (!("ncsedtRestorableObj" in window)) {
              * @type {Object}
              */
             buttons: {
-                /**
-                 * Edit Button Configuration
-                 * Toggles the editor's edit mode on/off
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Normal state icon (base64)
-                 * @property {string} icon2 - Active state icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if button should be disabled
-                 * @property {Function} action - Button click handler
-                 */
                 edit: {
                     name: 'edit',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABP0lEQVRo3u3YMU4CQRTG8T+7nkM3HkUTK26BHa2Vt9BGGlAEgl5Dz2E2XoFGGqLNTljJDDNLwXtD3pdMQTIkv+/tsNkFLBaLxQIV8AmsgAeglAZ1yTnwBfy21jtwJg07FJ9NiX34LEoMI3i3Fij+TdwnlniUhrpUwNUBJVbScIevgR/gpmOJDy14B+pSogYuJPGhu80a6O/svdvZ8w1casSnlBDHV/w/NqHlO07D5vtiCU1+AgyADfErIZYK/+THQNHsucV/Ja6l8fsm7/A94MmzR/zMnyT++ZTwo1zxRfM5G/yS7eNvAbwY3vBpePfqlx3+rYUvc8dPDW/4OL79X41aPPgfiedsb5UlMPPsqRF+GXGJTf4VpZMPFWhPfo7iyYcKOLz6yYcKhJZKfGoBtfiUAqrxsQLq8RaLxXKc/AH+RGvPIDl6DwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNDo1ODoyMyswMDowMGRD6r4AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6NTk6MzIrMDA6MDCQATIWAAAAAElFTkSuQmCC',
@@ -328,15 +318,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isEditButtonDisabled() },
                     action: function () { _this.editToggle() }
                 },
-                /**
-                 * Code View Button Configuration
-                 * Toggles between visual and HTML code view
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if button should be disabled
-                 * @property {Function} action - Button click handler
-                 */
                 code: {
                     name: 'code',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAACIElEQVRo3u2ZsUscQRjFf8ZCMFVSmFIskiqkUxEkXbAJFmJO0MQmraSxDYLYJVVII5axCakEm5C/IBwh2ClBxPaKWNhEjMlZXA7mHrPZmZ3ZGYR9cMXevO99783s7c7tQoMGDRrkxHCiPgvAHjADjAO/gE7u8D54A3SNz9tYwrcSBZiS43aivlEwDJwzuALjuU354JGYj3ruh55Cyw6cSTluV9CoBS3gtwNvh8EVeC3jV8CLXOa7DtwDCfBExrupQ5jmywKMCvcvcMcSIFkINV8W4LFwjywcc7zWEMv/GpgNy34D68LftXB0Qq6o4Ydtm3mXRp+kZs3CWQQuqXElqpoHOJW6yQJebSFCzI9J3QUw8h9+9BAh5gHmpfarQ020EKHmAbak/p1jXXCIGOYBvojGc4/ayiFimR8CzkTnvqeGUwjXzdyQZ/MHDN5xz4BjT42ivqXbl6JVWPFovCr1nz2NLxZ4cD4NnwUKvJfaTQ/zob2jCLWl7mlq8yGCI/RuWmbNvRzmqwpPC/fEoUfLs0e0ELbr8ivhfcxtvo+lgkaKXeGsl+jatuhLsc33Ybu8KX7I+GyJZsjlOkoIE3fp/W00Z/O2Y4Ak5m0hTMwxOKPfHbSSmzdDXMp3GxJg20Eni/k+WnK8LwFeVtDIio4EeJjbkA8mxPw5Cd4/xHy8ro/QvwF/bnKAJO8AYi5xh95N7Ce9Dd0H4DBFiAYNGjTIh2vrWlwSpGLTnQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNTowMjowNCswMDowMFgiNkMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTU6MDI6MDQrMDA6MDApf47/AAAAAElFTkSuQmCC',
@@ -344,15 +325,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isCodeButtonDisabled() },
                     action: function () { _this.editCode() }
                 },
-                /**
-                 * Undo Button Configuration
-                 * Reverts the last change in the editor
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no changes to undo
-                 * @property {Function} action - Button click handler
-                 */
                 undo: {
                     name: 'undo',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABhklEQVRo3u3WMWsUURDA8Z9i5CQaG5toIURMIRLUJo3Gyi5fxVYbwWATIYVo48ewsLJUsFFMYZVCiyTNhQhBwXDEnGfxVjiWvTWn7xED84dpdpeZ+e/Mg0cQBEEQBEEQ/E88PuwG/pXBUZI4MeL5ffSwNEauCdzELdzAZUzjNH7gC7axibd4g1Xs55YaDMVBBK7iedXgYMzYwZNKtohAm8QVvMTPv2i8Hv0q12wJgfqZmJBWbC9D4/XYq2p1cgv8nsRFaW9zN16PDzh/kGaPjRAYxXdMtrzfxWu8wntsoVvlPCcd6nncxh2cacm1iUV8zDWBtuji3h8aqjOFu/jUkvcr5koK9LGMU+MWGaIjrWdvRI11aXLZBb5Jq5CLa9LaNNV6h5MlJrCUUQAuSDvfVOtBCYES145pbDTU2cWlEgIlJnFd85l4UUqgxCQeNdToY6aUQO5JdPC5ocbK8EfHM/+1hxklenhae9aVrhut5LgK5JI4izU8w4L8PzwIgiAIgiAIgiPML+zxM5YSM3skAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTA5LTE2VDE1OjAxOjUyKzAwOjAwmCW2HgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wOS0xNlQxNDo1OTo1NiswMDowME3jdLwAAAAASUVORK5CYII=',
@@ -360,15 +332,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isUndoButtonDisabled() },
                     action: function () { _this.undo() }
                 },
-                /**
-                 * Redo Button Configuration
-                 * Reapplies previously undone changes
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no changes to redo
-                 * @property {Function} action - Button click handler
-                 */
                 redo: {
                     name: 'redo',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABiklEQVRo3u3WT0tUURjH8U+hhoSuijQqd4oECS1aBJK73ktvoCCs2am7auHLCIJatSraRFjbsDYFUVAgRqFWji7uLPQ4c+femWO6eL5wFvfP8/D9nXMv5xAEQRAEQRAEQTUaRy3Qr/xOenMgQ+MBXMUNXMdFnMUZDOIXvuID3uIlXuFfTfn7uWdkEg+x1pqZOuM7lnG5ovze2r6ZwjM0exBPRxNPMF1Rvq8Ag7iNzQzi6fiLRZzqIt9zgPNYOQTxdKxgokT+QIATFeRn8BQXSt75ied4gdf4hh+t/mM4h2u4qfjZh0t6/cbpkudVnPfJr5fMxipuYaRGz1HcaYXsZZUqM47PHZpsYB5DdRomDGMJ24cRYAhvOjT4hCt9iKfMKT7BrAHudih+11qZnDRqyFcKMKHYPdPCL8p/5P8hXynAY+2/+ZljIN81wCXFGSUtundM5LsGWGhT8NH+HfIo5Q8EOJlc/1GcHPfyAFsZ5bOfKtuFmsUjvFdsPLnkcxw3giAIgiAIgiAIwC7w7i5ZynjYFQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNTowMjowNCswMDowMFgiNkMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTU6MDI6MDQrMDA6MDApf47/AAAAAElFTkSuQmCC',
@@ -376,15 +339,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isRedoButtonDisabled() },
                     action: function () { _this.redo() }
                 },
-                /**
-                 * Move Up Button Configuration
-                 * Moves selection to parent element
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if can't move up
-                 * @property {Function} action - Button click handler
-                 */
                 up: {
                     name: 'up',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAAsUlEQVRo3u3VTQqCUBhG4dMP0aBZbaLVNWzaRlqJm2gpzmoSNXGQYJJe7bsXzgOCA9H3CCJIkqRei+gBKS7AFVhGDxk7/tUcxUV8ji8uomt8MRF947OP+GV8thFDxmcXMWZ8NhEp4yeJWCWMPwFn4PHl2NL+C9fAveO6I7AHqr+88gFq2m/6MMdDsviIDCiZAdEMiGZANAOiGRDNgGjFB6xnvPcN2DXnG+AZHStJkqb2BvfBZVUwT6fHAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIyLTA5LTI3VDExOjAxOjU1KzAwOjAwYMkoEwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMi0wOS0yN1QwMTowMTo1NSswMDowMBGUkK8AAAAASUVORK5CYII=',
@@ -392,15 +346,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isUpButtonDisabled() },
                     action: function () { _this.up() }
                 },
-                /**
-                 * Move Down Button Configuration
-                 * Moves selection to child element
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if can't move down
-                 * @property {Function} action - Button click handler
-                 */
                 down: {
                     name: 'down',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAArUlEQVRo3u2XvQrCMBgAT9FJEAqu4vO4+BgOvrSv4NjJOgm10Gp/vwTv4JuSkLtsAREREelkBxTAKlqkLw+gqs1hjkvW0ZUGRAsYEC1gQLSAAdECBkQLGBAtYEC0wN8HbEacPQLbjvXm45yAfcveCrgvHX8GSj5/XUPmCdyWlp8qIlR+bEQS8kMjkpLvG5Gk/K8RSct/i8hCvi0iK/lmRJbyby7ANVpCRERE5uIFO9pmz/tN+9wAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMjdUMDE6MDE6MzcrMDA6MDAxOTC9AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE2VDE1OjAxOjE1KzAwOjAwqJU+1gAAAABJRU5ErkJggg==',
@@ -408,15 +353,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isDownButtonDisabled() },
                     action: function () { _this.down() }
                 },
-                /**
-                 * Previous Sibling Button Configuration
-                 * Moves selection to previous sibling element
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if can't move to previous sibling
-                 * @property {Function} action - Button click handler
-                 */
                 previous: {
                     name: 'previous',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABGklEQVRoQ+1XOQ7CMBBMREFBwQPgWdRU/IqGf1DxmVDRUFBQAOsikmUFa61ZgkaaSC6i7I7nSGyn78ivnpx/JwH/TlAJKAHQAb1CoIFwuxKALQQBlABoINyuBAoL93Z/tnGFrXUCRCaQyJ9sbG0MzvnhsigBI/mEt2ETkJNPjlIJKMlTCZgiTyPgG3kKAQdjeawsHzt7dgOXl7f1XzwYratQzXnPfN6alxUuPMUtAuYin3g/bSyZBTyM/CpaQMKbK4W7zbX+hQCPCIqNjHoZHZOl3shqIiheofz7oj7MTSVBl0ApgvKHJhdB+0vp2XfCa1rOQuGTRwBKQISLCIYSQNyL6FUCES4iGEoAcS+iVwlEuIhgKAHEvYjeD0hbKjFLoDaVAAAAAElFTkSuQmCC',
@@ -424,16 +360,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isPreviousButtonDisabled() },
                     action: function () { _this.previous() }
                 },
-
-                /**
-                 * Next Sibling Button Configuration
-                 * Moves selection to next sibling element
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if can't move to next sibling
-                 * @property {Function} action - Button click handler
-                 */
                 next: {
                     name: 'next',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABHklEQVRoQ+2WQQrCUAxE25WXEEHwEh7MnaAuXOmdPIggiAfRZK82k/yQX5hCV02m82bk13GY+TXO3P9AgOoG2QAbCCbAn1AwwPA6GwhHGBRgA8EAw+tswBHhQXZOjr2vKxUNvMXJTu5rC4gqAPXeBKISoAlENUAYogeAEEQvAG4IBGArb1k0ODlufzT28uyMvAMBeInwEhF3zkKnEwLwFEMrpyl0zQyBADzExRp14pzXL/XRsosA3EVwYxENzugXWhswXQiASdAwpH8lfl2QeRXpCQA23xOAy3wvAG7zPQCEzFcDhM1XAjQxXwVwQc75qWO54hid8gQ9JwAUV8IwG0gIFZJkA1BcCcNsICFUSJINQHElDLOBhFAhydk38AELbCYxoaSv8QAAAABJRU5ErkJggg==',
@@ -441,15 +367,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isNextButtonDisabled() },
                     action: function () { _this.next() }
                 },
-                /**
-                 * Cut Button Configuration
-                 * Cuts the selected content to internal clipboard
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no selection
-                 * @property {Function} action - Button click handler
-                 */
                 cut: {
                     name: 'cut',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAB9klEQVRo3u2YTU7CQBiGHzHqCgzXELmAceERSIhncUndGRFTAtHD+BNdeAAFI3HJDQSXGFxMScgU2pnOtDOLvskkJP2m87ztVzp9oVSpUmlqAn1gDPxGYwyEwLFruCQdAHfAH7DcMhbAENh3DbsJ/jkBXB5Plk0ECWsp6V4DfjUGBcArGWgSb5sp0Aaq0WgBE+Lt1MgZPlA5SShN+gLqG+rqkbH12lvX8ACf0sRWQu25VDtyDQ8wkyZXE2prUu3MNbyugUOp9sc1POi1UFuq/XAND/GHeML2h/hbqr12DQ9ie7CQTjhFPLC1aLQ3wC+Bnmv4lYYpi2QFKAQexLbg0bKJwuDXTQyIt1NWE4FGrVU1EG/YETBH/FW+A11Ez5uayBVeRRcpJq4S6jumi+9aMPAG7ABnW46fRsdfpPpX4NLWVbQh3TvhpQIJ+gRxB3Lr90rOhiqIdlmpk4cJWwpQ/4v1rp104L0zkQW+UBNyLjRDvNRuUHuRpRkM8gJXyYVUwQo3oZsLebeZy5ILebOdzpoLefNBE0on1MmFuopr5GrCJBfy4qPeJBfyIlYxyYW8CLZMciEvosVQmqyTC3kR7mbNhRbAkYEBqyay5EJ9Q3hVE0rSzYUegD1LBtJMKEslF1ogrrxNeOuSc6F59LuHec+XKlXKUP835G8IanS10wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDo0MDowNCswMDowMFFlZxoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjdUMDQ6NDA6MDQrMDA6MDAgON+mAAAAAElFTkSuQmCC',
@@ -457,15 +374,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isCutButtonDisabled() },
                     action: function () { _this.cut() }
                 },
-                /**
-                 * Copy Button Configuration
-                 * Copies the selected content to internal clipboard
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no selection
-                 * @property {Function} action - Button click handler
-                 */
                 copy: {
                     name: 'copy',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAAA7klEQVRo3u2ZSw6CMBRFj4apcQMyZu0aEscO3JGagAvAATqQQOTTvlfiPQmTQuk9bdKXtCDSJAdKoAaayE+U8HeD4NEESsPwiwU2PW01sIsxMxMyLOrcjPgmGbbeASTgHcBLwKJO1MAZKKaG+7XNWdeJx3vMYALWdaIBTkNh52yj1nXiM+Y+lIBVnRg1zt/uQskgAW8k4I0EvJGANxLwRgLeSMAbCXizeoGspy3ps9Auq18BCXgjAW8k4E02o8+T78PdKFelHaqhF3NW4GoQuMsl5M8K2ksHq7uBG3AIPSM57aVDFTF4BRxjhBcheQHmPezLx9HoXgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDozOTozNCswMDowMArEXrAAAAAElFTkSuQmCC',
@@ -473,15 +381,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isCopyButtonDisabled() },
                     action: function () { _this.copy() }
                 },
-                /**
-                 * Paste Button Configuration
-                 * Pastes content from internal clipboard at cursor position
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if clipboard empty
-                 * @property {Function} action - Button click handler
-                 */
                 paste: {
                     name: 'paste',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABG0lEQVRo3u2ZzWrCUBBGj9WtUNc1a99KfT1F6KYoXbgVq6+iQiK4TRcmoGKS3h/7WToHZhHIzP0OCVlkID4dYAxsgVNRG2AEtB9wXlR6wBeQV9QaeFWHrKLdEL6sFfCiDnuP8Q/ClzX8rVAJMAMyh3BlfQBvQB+Ye/RnwDswCAm/9zi4rP7NLN85h6LfmVnAoTEFcmDqI+Dz2lzWvJBIgEXgrLQqZKtGIG+4NycuTfPvZn3Kz5kLJqDGBNR0AnpbAb3R+PNPwATUmIAaE1BjAmpMQI0JqDEBNSagxgTUmIAaE1BjAmrq/swdge7Fdex9gAuVC466J7AUBr7l06dpwHnBFrIailE7rvdtTiScF2ypIHgKTELCG8Z/4BuHD+VLGLARSgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yN1QwNDozOTo1MCswMDowMDjkcyQAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjdUMDQ6Mzk6NTArMDA6MDCQATIWAAAAAElFTkSuQmCC',
@@ -489,15 +388,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isPasteButtonDisabled() },
                     action: function () { _this.paste() }
                 },
-                /**
-                 * Link Button Configuration
-                 * Opens dialog to insert/edit hyperlinks
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if not in edit mode
-                 * @property {Function} action - Button click handler
-                 */
                 link: {
                     name: 'link',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADHElEQVRo3u2ZzUsUYRzHP7uBSh0qLTtUKKuBQdGpOkSkFBQEnZLqYJEQBL0IEkT0B1QQhYc6mG1u18B7eRGtSxHUUahs7WZrmEX4Eurh2YHxO2+77szOCvuFYXlmvvP7fZ6Z53n2eZ6Bqqqqal0rEVPeOuAo0AQ0ADngO/AWmI/7ofgpBWSAv8Cyy/EHSAPNcYO6qRdY8ADXYx64HjewpSTwrEBwPfqCgm8oA3wa6Ha59g0YAoaBL0A9sFk8hzH940PEnJ7wgzifag7oxDmAJIEuYEb8c5jOXhHwk0BrwL37XSrxvFLgUwXG6JJ7Z4GacsFnSoS34mQlRsd6gbf0QuK4DQQkQ6zAAHBRzv0A2jEjTrGaknJDlBW4DVwOER5gu5R/hcTq0D7gP4U1mx3AAYIfXAKYoEx9YEgSTQEtLr5TwL+85zX+o8oFnKNQbRTw9cCiJDvt4R0WX7+HrxWYFm86CniA85Loo4/3Kc4R6ph4GjDTap3YNUdVgbuS7J6PdwswLv5R8WzKA9s9N8OCTQJtcu6xJOsJiHEIWLL5l4Cd4hkluJmtgioUPg2ck/O/pbw1IM57YMxWTgAnxPM5/5sBroZRAQv+EqbT2pWVcnsB8UakrDPN6Tx8N+YNlSz7YkST78LZJA4GxOthdbN7JNfbCHGG0CvJ5oCN4hkTzzimw3rpgfjvhAWrSuFcw04C28TXgXN4fOIT95N4z0ZVAZ1Z5vBejOia942H74z4FvB/W2tWHc6tj04ffw1merCMmS6cdPG0AD8l5qso4MEMbfZEXwneBEtiJmqNLtdSmOZnj7kI7I2qAlck2UAJsdzgl4FbYYB6DVf6h5QrAX4E2C3n08DDKCugi4fGoEBFwL/EvOFIdZzVrztLcX8uXs0mU2ScNasWs9FqT95VIvxgueAtpQVgBrPp5Kc9lQIPZhGhc/MZzM6DwiQwy0BdScUGb+mGC5DVJwaB+5j9mwkPX6zwlvo84IKO/kqAt3QNMxMt9ONEaMvAMNWE2SWe9QCP5fPQWj7y1QBH8qCNmH2gLPCOCv9AV1VVVVWgVgAPDHRgefYM4AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0xNlQxNDo1OTozMiswMDowMOFciqoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMTZUMTQ6NTk6MzIrMDA6MDCQATIWAAAAAElFTkSuQmCC',
@@ -505,15 +395,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isLinkButtonDisabled() },
                     action: function () { _this.editLink() }
                 },
-                /**
-                 * Image Button Configuration
-                 * Opens dialog to insert/edit images
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if not in edit mode
-                 * @property {Function} action - Button click handler
-                 */
                 image: {
                     name: 'image',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABzUlEQVRo3u2ZyUrDUBSGvzosxLEqqAj6AKJvIK58AKdncOXeCUdc+BKiILoQhYLgwpUg4hOIIu4UdyotKDi0LpJLQ8hNk7S9p4X7wYHCPWn+L0N7cwMWWRqr/P0bwARwJS2aNHzBrTXpMHHZdIN/u1UAVqRDJQk/BUx7JFalw8UNr5ihDs6ELrxiFvhxe5alw/rZKhE+SGJJOnTc8Io5j8RiuTtPlRgfBNaBcaBPs32X+/kXyEXcbwfF/6B3TU8OyODc+NkkcsPAM8Xfcql69BykWJzUQHhVe7qQYZdQFmhPYl4FPoB03I38R8EkvVH332A4WMWxAtJYAWmsgDRWQBorII0VkKbSAmmgW1pKkWQ6fQZcUv6SZeTpdCUFFjy9OyV6Sz2LGxcYA748vXmcJZQg+oFroKdWBNqA+4D+HDDi620Bbt3xc/T3oFGBQ/QP4w9Ap9uXAo5847oVOmMC8yHhVWXc8NsBY3/ApJTAKPAZQUBdLnnN2CswYFqgFbiLGD5K3QDNJgX2Kxhe1a5JgWpj14XqhroXaAoZy+Ks4ytM3wdedO8QQs/AhWBgP6dJNhoCXpB/N/BEcTqSSOIYZ33edPA34ABn9mqpWf4B0/l4sgdYXjsAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMTZUMTU6MDE6MTUrMDA6MDDZyIZqAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE2VDE1OjAxOjE1KzAwOjAwqJU+1gAAAABJRU5ErkJggg==',
@@ -521,15 +402,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isImageButtonDisabled() },
                     action: function () { _this.editImage() }
                 },
-                /**
-                 * Head Edit Button Configuration
-                 * Opens dialog to edit document head section
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if not in edit mode
-                 * @property {Function} action - Button click handler
-                 */
                 head: {
                     name: 'head',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADI0lEQVRo3u2ZT09TQRTFf4KtCRBNwJIodK0LdwgWd+BnMBDdgaisCYluXAqu1QBxSeKfGFeKSz6AAZMaNzRxYQWbKC6gKGWhdTGvyePOtH3TzrQYe5JZzOvMmXPfu3PvnSm00ML/jWOOeNqBIWAEGADOA2eAruD3PeArsAGsA6vAO+BPs19AEpgHNoGiZfsCzAH9zRCeAJaAgxqEy3YALACnGyX+GvDDgXDZtoFxn8JjwJMKAnaAp8ANYDD4SrGgJYJnU8AzYLcCz2Iwxyk6gLdlFtwAJoIxNnyTQKYM54olX9U3bxL/C5gBjtfJPQvsG/jf4OhLmNwmA1xw9YaAFCrMynUW6iW+biB9j/Jp1+gH0ob1xmolTKBHm4wn8WEjcmLN70BPLWRL6D7v0m3KIQUUxNqPbUmS6ElqpgHiS7gn1i5gmbHn0UNlPdHGFl3orjQXdXI7em0z0UDxJUwLDVmgLcrEYTFxB4dJxQKdQF5oGZKDTBaNiP4KagM3Gj+DtcMYjWLAgOivNkF8ubWlNqMB50Q/Lfpx4AEqc26hNnzc0xi5ttRmhExesk6XEaoYPPMxphc9qVWFjP/yrZhqlpynMSfQ88EhRApLAkXDs9+exlSFyYA90T8p+suGOcuexpwS/XwUoz5SOfbGUb66ReUN6mJMSmj5EMWAV2LSVJRJnnBLaHkpB5hcaE30R2kerlTRZoT8bLscnVJiMMrENtSlU3jiZBMMmBIaPmMRNefE5AwerjoqIA58Ehru2xD0oye02QYacAc9gfXZkiwIkn3U/vCNy+hHyoe1EHWjag+Z6pMexZ9FP0xtU8e96Th6vZLGz41yEpWo5HpX6yVeNJDmcOtOw+hn4CLwyAV5DHUykuQF1O1BZx3cceAuus8Xgdc4vEjoKGNE6WtMWxrSCdxED5Vh8c6TZww9MoVbHniOql8uoQ4j8aD1Bs9uAy/QM6x0G69XOGPo0clF+4aDDRsVPajrPpPv2rYCKs53N0p8GH2osiNbg/AsqjywzrBhuPqbtQ24iCq9B1C3B30c/pt1E1VTraGuS9Y5An+zttDCv46/K53XmFVUFdIAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMjRUMDc6MTM6NTQrMDA6MDAX56YDAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTI0VDA3OjEzOjU0KzAwOjAwZroevwAAAABJRU5ErkJggg==',
@@ -537,16 +409,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isHeadButtonDisabled() },
                     action: function () { _this.editHead() }
                 },
-                /**
-                 * Save Button Configuration
-                 * Triggers save operation for current content
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Normal state icon (base64)
-                 * @property {string} icon2 - Processing state icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no changes to save
-                 * @property {Function} action - Button click handler
-                 */
                 save: {
                     name: 'save',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAABvklEQVRo3u2Zu0oDQRSGv0jUWKigTZAIYiH2Bn0FOx/AQiSVVV4hpYiVta3YeEGsLSwEo40+gRcQO4MXtIzF7uKyzGSzs3NmDcwPU+25/N/mZGaXBS8vL6//rEXgFPgAusKrZdv8LPDmwLgYxJFj89YhXIyNKESyqJSWUI/q9qAAiEHoAGyNiTiEawDrEEUA9IIYGACAlX7jSykAqlhbf+hSyvVuP/FDlswUJg9QtMoGOWmz61QD/wt4gKIlAVABmkAb+ArXNbAFjGSo85rXiMlRXgPu0Z++hxn6jwIN4DlD/1wAlRTzB8C4gY9p4NwFQLOH+V3ybb9GuVkB2ujvfCFnR1aAT0XOIzBh2L/qGuBbkbNu2LtO8E5gmm8EcJuIf8Jsm64DnbDGD7DsCmAzEW/yGhg3H60rVwBl4CYWv6qJm8lg/gGYcwUAMMXfblRTXG+FJuvS5k0BIJj7DWBYYT6qFYcQMZ8HQKedRL0OwaOCiHkJgBKwr6ib3LnmbZgHeE9plrbWFDXLwJkm3tqdj3SSE2BPU3cMuJQ2D7BAvg8cLwSPxCpNAneS5uMQx5iPU6NH7SpwIWney8vLS16/eT7oBHxeUFYAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDktMTdUMTY6Mjk6NTQrMDA6MDCj7IdOAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA5LTE3VDE2OjI5OjU0KzAwOjAw0rE/8gAAAABJRU5ErkJggg==',
@@ -555,15 +417,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isSaveButtonDisabled() },
                     action: function () { _this.save() }
                 },
-                /**
-                 * Agent Button Configuration
-                 * Opens dialog to interact with AI Agent
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Button icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if not in edit mode
-                 * @property {Function} action - Button click handler
-                 */
                 agent: {
                     name: 'agent',
                     icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTEyIDJDNi40NzcgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMnptMCAyYzQuNDE4IDAgOCAzLjU4MiA4IDhzLTMuNTgyIDgtOCA4LTgtMy41ODItOC04IDMuNTgyLTggOC04eiIvPjxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xMiA2Yy0zLjMxNCAwLTYgMi42ODYtNiA2czIuNjg2IDYgNiA2IDYtMi42ODYgNi02LTIuNjg2LTYtNi02em0wIDJjMi4yMDkgMCA0IDEuNzkxIDQgNHMtMS43OTEgNC00IDQtNC0xLjc5MS00LTQgMS43OTEtNCA0LTR6Ii8+PC9zdmc+',
@@ -571,16 +424,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     disabled: function () { return _this.isAgentButtonDisabled() },
                     action: function () { _this.editAgent() }
                 },
-                /**
-                 * github Button Configuration
-                 * Triggers save operation for current content
-                 * @property {string} name - Button identifier
-                 * @property {string} icon - Normal state icon (base64)
-                 * @property {string} icon2 - Processing state icon (base64)
-                 * @property {string} title - Button tooltip
-                 * @property {Function} disabled - Returns true if no changes to save
-                 * @property {Function} action - Button click handler
-                 */
                 github: {
                     name: 'github',
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAABgAAAAYADwa0LPAAADIklEQVRo3u2Y20tUQRzHPyrdzFKoxUv5WlGhkCX10JUgejQquzxE/0IQRBYVBAoSJSZmvfYqFpQEQXSBoCihx+olSreLRmDXLWt7mFl2nT0zZ845c45B+4UB2d+c7+/7nRln5jdQQgn/N8oc8VQArcBWoAVYAdQDVTL+BUgDz4GnwB3gMfBnpgegEegCRoFswPYG6ASWzoTwFDAAZEIIV1sG6AcWJyX+APDRgXC1TQD74hQ+C7gSg3C1XZK5nKISGE5AfK7dlDmdjXyS4nPtNjDbhYEklo2u9UcVf1BDfAHYBfQB7yMIfAdclFw9mj7tYcWn0O82Kwv6zQM6gM8yNoU4sB4ilt6w/PuFjGVl3w75bQ6rNLnGgUVhDAxoCL9p+jcAG8mfvl6okn0aNPHvmpx9QcU3oj+kJsKMhiV0M/6DgCd2F/p1+5vpU+8KlZJbl7fTlqgC/7tNUwwGmnxyvgbKbYg2+BANxCA+h8s+uVttSI4bCCYJuSNYIkV+N/Nqx9QPvKZkrSHBEOIfLS6MA9cN8RYbA8sMBPdiFJ/DXUNsuY2BegPBWAIGRg2xIm1eBkwH0UxjgY2BKQNBElVTyhAr0uZlwHTS1iVgwLSEi7R5GRg3EGxKwMBmQ+yDjYFXBoJtOKyUPDAf2GKIF2nzMvDAQFAFHInRwFHMA3TfhqQZ83E+CayOQXwz4gEs8h2sHPHoZCJKy4SusAZRnTm5zAGcUD7+BLxUfssAZ4HaCMKXAN3ALx/xWcQdzRq1TC9oeuXv6xDlomrkFuKitRNYaOCtAdqAk4j3URvhWUSlZjofPNGrkFxF1AqN6Av5Z8BcA+ccYMRStPqIEBjViLVeSHRGxnaQL9AL22EL3vaA4sd8ZtWIPQrZV/Kn8XbgEfATccDcwG6aGwIa2B1WfA7nFMLzEfkqAojvjioexNY1VEA6BRyKyGkjfpAA26YfKoFrSoJhYD+wHlEptTk0MEgMLx9lwGmfxC4M9OBw5L2wl+LdyYWBNGLTSAQ1iOc+9fUujIEM4oG3OinxhagDTiFG70mA70aAt4glmUSRVEIJJfyr+AubsTWHiHv2sgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wOS0yOVQxNjozMzoyNCswMDowMAydbHEAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDktMjlUMTY6MzM6MjQrMDA6MDB9wNTNAAAAAElFTkSuQmCC',
