@@ -33,6 +33,10 @@ Once the editing is finished, I save the changes I receive in an index.html file
 
 To try out the AI, you can create an account at https://openrouter.ai and use a free model, or install Ollama. In order for Ollama to work in local mode, you will need to configure CORS. Here's how: https://duckduckgo.com/?q=Ollama+CORS
 
+![translate](demo/ai-agent-1.jpg)
+![edit html](demo/ai-agent-2.jpg)
+![AI config](demo/ai-agent-3.jpg)
+
 ## Getting Started
 
 ### Installation
