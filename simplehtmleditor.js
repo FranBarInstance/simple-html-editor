@@ -10,8 +10,6 @@
  */
 
 (function () {
-
-    // Manages the state of elements that need to be restored during undo/redo operations
     window.ncsedtRestorable = function () {
         var _this = this;
 
@@ -108,7 +106,6 @@
             )
         }
 
-        // Trigger change event to notify that restoration is complete
         document.dispatchEvent(new Event("editorchanges"));
     };
 
@@ -148,7 +145,6 @@
             )
         }
 
-        // Trigger change event to notify that undo operation is complete
         document.dispatchEvent(new Event("editorchanges"));
     };
 })();
@@ -163,7 +159,6 @@ if (!("ncsedtRestorableObj" in window)) {
 }
 
 (function () {
-    // Constants
     const MAX_IMAGE_SIZE_BYTES = 1200000; // 1.2MB - Large base64 images degrade DOM performance
     const MAX_ALLOWED_IMAGE_SIZE_BYTES = 5000000; // 5MB absolute maximum
     const MIN_GROUPING_WINDOW_MS = 100; // Minimum time window for grouping mutations
@@ -275,7 +270,7 @@ if (!("ncsedtRestorableObj" in window)) {
             },
 
             additionalPrompts: {
-                "only replacement": '(INSTRUCTIONS IMPORTANT: The answer should only indicate what is asked of you, without any additional comments,  just the -HTML code- or the text, without markdown or anything else.)'
+                "only replacement": '(Additional instructions: Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.)'
             },
 
             /**
@@ -2016,7 +2011,7 @@ if (!("ncsedtRestorableObj" in window)) {
         }
 
         // Get additional prompt if selected
-        let fullPrompt = `Current HTML code:\n${currentCode}\n\nUser instructions:\n${prompt}`;
+        let fullPrompt = `INPUT:\n${currentCode}\n\nUser instructions:\n${prompt}`;
         if (additionalPromptKey !== 'none' && this.options.additionalPrompts[additionalPromptKey]) {
             fullPrompt += '\n\n' + this.options.additionalPrompts[additionalPromptKey];
         }
@@ -2059,6 +2054,36 @@ if (!("ncsedtRestorableObj" in window)) {
             executeBtn.disabled = false;
             executeBtn.textContent = originalBtnText;
         }
+
+        if (additionalPromptKey === 'only replacement') {
+            console.log(additionalPromptKey);
+            let previousValue = responseTextarea.value;
+
+            const checkAndProcessResponse = () => {
+                const currentValue = responseTextarea.value;
+                if (currentValue !== previousValue) {
+                    let processedValue = currentValue;
+                    processedValue = processedValue.replace(/```[a-zA-Z]*\s*/g, '');
+                    processedValue = processedValue.replace(/```/g, '');
+                    if (processedValue !== currentValue) {
+                        responseTextarea.value = processedValue;
+                    }
+                    previousValue = responseTextarea.value;
+                } else {
+                    //
+                }
+            };
+
+            const intervalId = setInterval(() => {
+                if (!executeBtn.disabled) {
+                    checkAndProcessResponse();
+                    clearInterval(intervalId);
+                } else {
+                    checkAndProcessResponse();
+                }
+            }, 200);
+        }
+
     };
 
     /**
