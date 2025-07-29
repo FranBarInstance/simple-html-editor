@@ -275,7 +275,7 @@ if (!("ncsedtRestorableObj" in window)) {
             },
 
             additionalPrompts: {
-                "only replacement": '(INSTRUCTIONS IMPORTANT: only replacements, just the -HTML code- to be replaced, without markdown or anything else.)'
+                "only replacement": '(INSTRUCTIONS IMPORTANT: The answer should only indicate what is asked of you, without any additional comments,  just the -HTML code- or the text, without markdown or anything else.)'
             },
 
             /**
