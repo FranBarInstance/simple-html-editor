@@ -167,26 +167,12 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Simple HTML Editor main class
-     * @class ncSimpleHtmlEditor
-     * @description A lightweight WYSIWYG HTML editor that provides intuitive content editing
-     *              capabilities with undo/redo support, clipboard operations, and more.
-     *
-     * @param {Object} options - Configuration options for the editor
-     * @param {string} options.editableContentSelector - Selector for editable content (default: "body")
-     * @param {boolean} options.usesLinearUndoHistory - Enable/disable linear undo/redo history
-     * @param {number} options.mutationGroupingWindowMs - Time in ms to group history changes
-     * @param {number} options.toolbarCols - Number of columns in toolbar
-     * @param {number} options.saveTimeout - Timeout for save button in ms
-     * @param {number} options.maxImageSizeBytes - Maximum image upload size in bytes
-     * @param {Array<string>} options.toolbar - List of enabled toolbar buttons
      */
     window.ncSimpleHtmlEditor = function (options = {}) {
         var _this = this;
 
         /**
          * Reference to the global restorable object for state management
-         * @type {ncsedtRestorable}
-         * @private
          */
         this.restorable = window.ncsedtRestorableObj || new ncsedtRestorable();
 
@@ -194,16 +180,6 @@ if (!("ncsedtRestorableObj" in window)) {
          * Editor state object
          * Maintains the current state of the editor including editing mode,
          * clipboard contents, and history stacks
-         *
-         * @type {Object}
-         * @property {boolean} isEditing - Whether the editor is in edit mode
-         * @property {string|null} clipboard - Content stored in internal clipboard
-         * @property {Object} history - Undo/redo history stacks
-         * @property {Array} history.undo - Stack of operations that can be undone
-         * @property {Array} history.redo - Stack of operations that can be redone
-         * @property {Array} history.force - Stack of forced history entries
-         * @property {Selection|null} selection - Current text selection in editor
-         * @private
          */
         this.state = {
             isEditing: false,
@@ -218,24 +194,17 @@ if (!("ncsedtRestorableObj" in window)) {
 
         /**
          * Validate and process configuration options
-         * @private
          */
         this.validateOptions(options);
 
         /**
          * Default configuration options
-         * @type {Object}
-         * @private
          */
         const defaults = {
-
             editableContentSelector: "body",
             usesLinearUndoHistory: true,
             mutationGroupingWindowMs: 200,
 
-            /**
-             * IA models
-             */
             aiBackends: {
                 ollama: {
                     enabled: true,
@@ -273,28 +242,18 @@ if (!("ncsedtRestorableObj" in window)) {
                 "only replacement": 'Iinstructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.'
             },
 
-            /**
-             * Number of columns to display in the toolbar
-             * When null, uses the default layout defined in CSS
-             * @type {number|null}
-             * @default null
-             */
             toolbarCols: null,
 
             /**
              * Timeout in milliseconds to disable the save button after clicking
              * Prevents accidental double-saves
-             * @type {number}
-             * @default 500
              */
             saveTimeout: 500,
 
             maxImageSizeBytes: MAX_IMAGE_SIZE_BYTES,
 
             /**
-             * Array of enabled toolbar buttons and their display order
              * Determines which features are available and how they are presented
-             * @type {Array<string>}
              */
             toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github'],
 
@@ -502,30 +461,13 @@ if (!("ncsedtRestorableObj" in window)) {
 
          */
 
-
         this.editingEnabled = null;
-
-        /*
-         * Private clipboard, does NOT share data with other applications.
-         */
         this.clipboard = null;
-
-        /*
-         * <ncsedt-editable id="ncsedt-editable">
-         */
         this.editable = document.querySelector(this.options.editableContentSelector);
         this.editableInBody();
         this.wrapEditable();
-
-        /*
-         * <div id="ncsedt-implement">
-         */
         this.implement = document.querySelector('#ncsedt-implement');
         this.implementToLastBody();
-
-        /*
-         * Default focus to editable
-         */
         this.focusedElement = this.editable;
         this.previousFocusedElement = this.focusedElement;
         this.observer = this.setObserver();
@@ -563,9 +505,6 @@ if (!("ncsedtRestorableObj" in window)) {
         return this.previousFocusedElement;
     }
 
-    /**
-     * Get editable element.
-     */
     ncSimpleHtmlEditor.prototype.getEditable = function (target, source) {
         return this.editable;
     }
@@ -784,7 +723,7 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Removes the code from the HTML editor.
- */
+     */
     ncSimpleHtmlEditor.prototype.ncsedtRemover = function (html) {
 
         /*
@@ -800,9 +739,6 @@ if (!("ncsedtRestorableObj" in window)) {
         return html;
     };
 
-    /**
-     * Remove removable block
-     */
     ncSimpleHtmlEditor.prototype.removable = function () {
         var _this = this;
         var count = 0;
@@ -814,9 +750,6 @@ if (!("ncsedtRestorableObj" in window)) {
         });
     };
 
-    /**
-     * Undo remove removable block
-     */
     ncSimpleHtmlEditor.prototype.undoRemovable = function () {
         var _this = this;
         var count = 0;
@@ -826,9 +759,6 @@ if (!("ncsedtRestorableObj" in window)) {
         });
     };
 
-    /**
-     * Editing on/off
-     */
     ncSimpleHtmlEditor.prototype.editToggle = function () {
         if (this.editingEnabled) {
             this.editOff();
@@ -837,16 +767,10 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /**
-     * Undo
-     */
     ncSimpleHtmlEditor.prototype.undo = function () {
         this.undoredo(true);
     };
 
-    /**
-     * Redo
-     */
     ncSimpleHtmlEditor.prototype.redo = function () {
         this.undoredo(false);
     };
@@ -871,7 +795,6 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-
     /**
      * Focus on previous sibling or previous parent sibling
      */
@@ -888,7 +811,6 @@ if (!("ncsedtRestorableObj" in window)) {
             this.focusedElement.scrollIntoView({ block: "center" });
         }
     };
-
 
     /**
      * Focus on next sibling or next parent sibling
@@ -907,9 +829,6 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /**
-     * Current focus to clipboard
-     */
     ncSimpleHtmlEditor.prototype.copy = function () {
         if (this.focusedElement != this.editable) {
             this.clipboard = this.focusedElement.outerHTML;
@@ -917,9 +836,6 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /**
-     * Cut current focus
-     */
     ncSimpleHtmlEditor.prototype.cut = function () {
         if (this.focusedElement != this.editable) {
             this.clipboard = this.focusedElement.outerHTML;
@@ -928,22 +844,15 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /**
-     * Paste clipboard content
-     */
     ncSimpleHtmlEditor.prototype.paste = function () {
         if (this.clipboard && this.focusedElement != this.editable) {
             this.focusedElement.insertAdjacentHTML('afterend', this.clipboard);
         }
     };
 
-
-
     ncSimpleHtmlEditor.prototype.isAgentButtonDisabled = function () {
         return !this.editingEnabled;
     };
-
-
 
     ncSimpleHtmlEditor.prototype.isEditButtonDisabled = function () {
         return false;
@@ -1041,8 +950,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Validate editor options
-     * @param {Object} options - Editor configuration options
-     * @throws {Error} If options are invalid
      */
     ncSimpleHtmlEditor.prototype.validateOptions = function (options) {
         if (options.editableContentSelector && typeof options.editableContentSelector !== 'string') {
@@ -1357,9 +1264,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     };
 
-    /**
-     * Toolbar events.
-     */
     ncSimpleHtmlEditor.prototype.setEventsToolbar = function () {
         _this = this;
 
@@ -1405,9 +1309,6 @@ if (!("ncsedtRestorableObj" in window)) {
         new ncSimpleMoveable(movableSelector, draggerSelector);
     };
 
-    /**
-     * Render toolbar
-     */
     ncSimpleHtmlEditor.prototype.renderTollbar = function () {
         var toolbar = document.createElement("toolbar");
         toolbar.id = "ncsedt-toolbar";
@@ -1439,7 +1340,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
         return toolbar;
     };
-
 
     ncSimpleHtmlEditor.prototype.renderConfigDialog = function () {
         const dialogHTML = `
@@ -1568,10 +1468,8 @@ if (!("ncsedtRestorableObj" in window)) {
         });
     };
 
-
-
     /**
-     * Renders the AI agent dialog with three textareas
+     * Renders the AI agent dialog
      */
     ncSimpleHtmlEditor.prototype.renderDialogAgent = function () {
         var dialogAgent =
@@ -1645,13 +1543,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Sets up event handlers for the AI agent dialog
-     *
-     * @method setEventsDialogAgent
-     * @description Initializes all interactive elements in the agent dialog:
-     * - Cancel button to close dialog
-     * - Parent/Child navigation buttons
-     * - Execute AI button to send prompt
-     * - Confirm button to apply changes
      */
     ncSimpleHtmlEditor.prototype.setEventsDialogAgent = function () {
         var _this = this;
@@ -1719,12 +1610,6 @@ if (!("ncsedtRestorableObj" in window)) {
     };
     /**
      * Opens and initializes the AI agent dialog
-     *
-     * @method editAgent
-     * @description Handles the opening of agent dialog and initialization:
-     * - Preserves current selection state
-     * - Populates code area with current element's HTML
-     * - Shows dialog with current content
      */
     ncSimpleHtmlEditor.prototype.editAgent = function () {
         if (!this.editingEnabled) {
@@ -1742,11 +1627,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Confirms and applies changes from the agent dialog
-     *
-     * @method editAgentConfirm
-     * @description Commits the changes made in the agent dialog:
-     * - Updates element's HTML with edited code
-     * - Closes the dialog
      */
     ncSimpleHtmlEditor.prototype.editAgentConfirm = function () {
         if (this.dialogAgent.open) {
@@ -1766,9 +1646,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to parent element in agent dialog
-     *
-     * @method editAgentParent
-     * @description Shifts editing focus to parent element
      */
     ncSimpleHtmlEditor.prototype.editAgentParent = function () {
         if (!this.editingEnabled) {
@@ -1782,10 +1659,7 @@ if (!("ncsedtRestorableObj" in window)) {
     };
 
     /**
-     * Moves focus to child element in agent dialog
-     *
-     * @method editAgentChild
-     * @description Shifts editing focus to first child element
+     * Moves focus to child element in agent dialogt
      */
     ncSimpleHtmlEditor.prototype.editAgentChild = function () {
         if (!this.editingEnabled) {
@@ -1800,14 +1674,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Executes AI prompt with selected backend and displays results
-     *
-     * @method executeAIPrompt
-     * @description Sends prompt to selected AI backend (Ollama/OpenRouter):
-     * - Gets current code and user prompt
-     * - Constructs appropriate API request
-     * - Handles API response
-     * - Updates UI with AI response
-     * - Manages loading states and errors
      */
     ncSimpleHtmlEditor.prototype.executeAIPrompt = function () {
         var prompt = document.getElementById('ncsedt-dialog-agent-prompt').value;
@@ -1903,12 +1769,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Calls Ollama local API to generate response
-     *
-     * @method callOllamaAPI
-     * @param {string} prompt - Full prompt including context
-     * @param {HTMLElement} responseTextarea - Textarea to display response
-     * @param {HTMLElement} executeBtn - Execute button to restore after completion
-     * @param {string} originalBtnText - Original button text to restore
      */
     ncSimpleHtmlEditor.prototype.callOllamaAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
         const backend = 'ollama';
@@ -1957,12 +1817,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Calls OpenRouter API to generate response
-     *
-     * @method callOpenRouterAPI
-     * @param {string} prompt - Full prompt including context
-     * @param {HTMLElement} responseTextarea - Textarea to display response
-     * @param {HTMLElement} executeBtn - Execute button to restore after completion
-     * @param {string} originalBtnText - Original button text to restore
      */
     ncSimpleHtmlEditor.prototype.callOpenRouterAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
         const backend = 'openrouter';
@@ -2026,8 +1880,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     };
 
-
-    // Anthropic
     ncSimpleHtmlEditor.prototype.callAnthropicAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
         const backend = 'anthropic';
         const config = this.sessionConfig.aiBackends[backend];
@@ -2261,7 +2113,6 @@ if (!("ncsedtRestorableObj" in window)) {
             });
     };
 
-
     /**
      * Edit source code dialog
      */
@@ -2350,7 +2201,6 @@ if (!("ncsedtRestorableObj" in window)) {
     /**
      * Edit source code dialog commands
      */
-
     ncSimpleHtmlEditor.prototype.editCode = function () {
         if (!this.editingEnabled) {
             return;
@@ -2424,22 +2274,9 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /* ----------------------------------------------------------- */
-
     /**
      * Renders the image editing dialog
      * Creates and returns a dialog for editing image properties and attributes
-     *
-     * @method renderDialogImage
-     * @description Creates a modal dialog with controls for:
-     * - Image upload and preview
-     * - URL and alt text input
-     * - Dimension controls (width/height)
-     * - Float and padding adjustments
-     * - Image removal option
-     * - Navigation buttons for parent/child elements
-     *
-     * @returns {HTMLElement} The dialog DOM element
      */
     ncSimpleHtmlEditor.prototype.renderDialogImage = function () {
         var _this = this;
@@ -2509,17 +2346,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Sets up event handlers for the image editing dialog
-     *
-     * @method setEventsDialogImage
-     * @description Initializes all interactive elements in the image dialog:
-     * - Cancel/Confirm buttons
-     * - Navigation controls (parent/child/previous)
-     * - Image upload functionality
-     * - Style controls (width/height/float/padding)
-     * - Integration with code and link editors
-     *
-     * @fires change - When image file is selected
-     * @fires click - For various button interactions
      */
     ncSimpleHtmlEditor.prototype.setEventsDialogImage = function () {
         var _this = this;
@@ -2609,16 +2435,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Opens and initializes the image editing dialog
-     *
-     * @method editImage
-     * @description Handles the opening of image dialog and initialization of its fields:
-     * - Detects if editing existing image or creating new one
-     * - Preserves current selection state
-     * - Sets up dialog fields with current image properties
-     * - Handles special cases (parent/child images)
-     *
-     * @throws {Error} If editor is not in edit mode
-     * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editImage = function () {
         if (!this.editingEnabled) {
@@ -2684,13 +2500,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Confirms and applies changes from the image editing dialog
-     *
-     * @method editImageConfirm
-     * @description Commits the changes made in the image dialog to the editor:
-     * - Updates existing image properties or inserts new image
-     * - Closes the dialog
-     *
-     * @fires contentchanges - When image properties are updated
      */
     ncSimpleHtmlEditor.prototype.editImageConfirm = function () {
         if (this.dialogImage.open) {
@@ -2718,18 +2527,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Applies changes to an existing image in the editor
-     *
-     * @method editImageConfirmExisting
-     * @description Updates properties of an existing image:
-     * - Source URL
-     * - Alt text
-     * - Dimensions (width/height)
-     * - Float position
-     * - Padding
-     * - Handles image removal if requested
-     *
-     * @private
-     * @fires contentchanges - When image properties are updated
      */
     ncSimpleHtmlEditor.prototype.editImageConfirmExisting = function () {
         var newsrc = this.dialogImage.querySelector('#ncsedt-dialog-image-src').value;
@@ -2794,17 +2591,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Inserts a new image into the editor
-     *
-     * @method editImageConfirmNew
-     * @description Creates and inserts a new image element:
-     * - Validates image source URL
-     * - Sets alt text and dimensions
-     * - Applies styling (float/padding)
-     * - Inserts at current selection
-     *
-     * @private
-     * @fires contentchanges - When new image is inserted
-     * @throws {Error} If image source is invalid
      */
     ncSimpleHtmlEditor.prototype.editImageConfirmNew = function () {
         var newsrc = this.dialogImage.querySelector('#ncsedt-dialog-image-src').value;
@@ -2840,15 +2626,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to parent element in image dialog
-     *
-     * @method editImageParent
-     * @description Shifts the editing focus to the parent element of the current image:
-     * - Validates parent element is editable
-     * - Updates dialog state for parent element
-     * - Maintains selection and history state
-     *
-     * @private
-     * @fires focusedchange - When focus changes to parent
      */
     ncSimpleHtmlEditor.prototype.editImageParent = function () {
         if (!this.editingEnabled) {
@@ -2870,15 +2647,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to child element in image dialog
-     *
-     * @method editImageChild
-     * @description Shifts the editing focus to the first child element:
-     * - Checks if child element exists and is editable
-     * - Updates dialog state for child element
-     * - Maintains editor state
-     *
-     * @private
-     * @fires focusedchange - When focus changes to child
      */
     ncSimpleHtmlEditor.prototype.editImageChild = function () {
         if (!this.editingEnabled) {
@@ -2894,22 +2662,9 @@ if (!("ncsedtRestorableObj" in window)) {
         }
     };
 
-    /* ----------------------------------------------------------- */
-
     /**
      * Renders the link editing dialog
      * Creates and returns a dialog for editing link properties and attributes
-     *
-     * @method renderDialogLink
-     * @description Creates a modal dialog with controls for:
-     * - Link text (anchor) input
-     * - URL input field
-     * - Target (_blank) checkbox
-     * - Link removal option
-     * - Navigation buttons for parent/child elements
-     * - Integration with code and image editors
-     *
-     * @returns {HTMLElement} The dialog DOM element
      */
     ncSimpleHtmlEditor.prototype.renderDialogLink = function () {
         var dialogLink =
@@ -2954,16 +2709,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Sets up event handlers for the link editing dialog
-     *
-     * @method setEventsDialogLink
-     * @description Initializes all interactive elements in the link dialog:
-     * - Cancel button to close dialog
-     * - Parent/Child navigation buttons
-     * - Confirm button to apply changes
-     * - Integration with code editor
-     * - Integration with image editor
-     *
-     * @fires click - For various button interactions
      */
     ncSimpleHtmlEditor.prototype.setEventsDialogLink = function () {
         var _this = this;
@@ -3003,18 +2748,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Opens and initializes the link editing dialog
-     *
-     * @method editLink
-     * @description Handles the opening of link dialog and initialization of its fields:
-     * - Preserves current selection state
-     * - Detects if editing existing link or creating new one
-     * - Handles special cases (parent/child links)
-     * - Shows/hides image editing option based on context
-     * - Populates dialog fields with current link properties
-     * - Manages visibility of link removal option
-     *
-     * @throws {Error} If editor is not in edit mode
-     * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editLink = function () {
         if (!this.editingEnabled) {
@@ -3082,16 +2815,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Confirms and applies changes from the link editing dialog
-     *
-     * @method editLinkConfirm
-     * @description Commits the changes made in the link dialog:
-     * - Closes the dialog
-     * - Validates editor state
-     * - Handles link removal if requested
-     * - Routes to appropriate handler for new or existing links
-     *
-     * @throws {Error} If editor is not in edit mode
-     * @fires contentchanges - When link properties are updated
      */
     ncSimpleHtmlEditor.prototype.editLinkConfirm = function () {
         if (this.dialogLink.open) {
@@ -3119,16 +2842,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Applies changes to an existing link in the editor
-     *
-     * @method editLinkConfirmExisting
-     * @description Updates properties of an existing link:
-     * - Target attribute (_blank for new window)
-     * - Link text (anchor)
-     * - URL (href)
-     * - Maintains history for undo/redo
-     *
-     * @private
-     * @fires contentchanges - When link properties are updated
      */
     ncSimpleHtmlEditor.prototype.editLinkConfirmExisting = function () {
         var newtarget = this.dialogLink.querySelector('#ncsedt-dialog-link-target').checked ? '_blank' : "";
@@ -3150,16 +2863,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Creates and inserts a new link in the editor
-     *
-     * @method editLinkConfirmNew
-     * @description Handles creation of new link elements:
-     * - Creates new anchor element
-     * - Sets link properties (href, target, text)
-     * - Inserts at current selection or replaces focused element
-     * - Maintains selection state
-     *
-     * @private
-     * @fires contentchanges - When new link is inserted
      */
     ncSimpleHtmlEditor.prototype.editLinkConfirmNew = function () {
         var newtarget = this.dialogLink.querySelector('#ncsedt-dialog-link-target').checked ? '_blank' : "";
@@ -3183,15 +2886,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to parent element in link dialog
-     *
-     * @method editLinkParent
-     * @description Shifts the editing focus to the parent element:
-     * - Validates parent element is editable
-     * - Updates dialog state for parent element
-     * - Maintains selection and history state
-     *
-     * @private
-     * @fires focusedchange - When focus changes to parent
      */
     ncSimpleHtmlEditor.prototype.editLinkParent = function () {
         if (!this.editingEnabled) {
@@ -3206,14 +2900,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to previous element in link dialog
-     *
-     * @method editLinkPrev
-     * @description Shifts editing focus to the previously focused element:
-     * - Validates previous element exists and is editable
-     * - Updates dialog state for previous element
-     *
-     * @private
-     * @fires focusedchange - When focus changes to previous element
      */
     ncSimpleHtmlEditor.prototype.editLinkPrev = function () {
         if (!this.editingEnabled) {
@@ -3228,15 +2914,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Moves focus to child element in link dialog
-     *
-     * @method editLinkChild
-     * @description Shifts editing focus to the first child element:
-     * - Validates child element exists and is editable
-     * - Updates dialog state for child element
-     * - Maintains editor state
-     *
-     * @private
-     * @fires focusedchange - When focus changes to child
      */
     ncSimpleHtmlEditor.prototype.editLinkChild = function () {
         if (!this.editingEnabled) {
@@ -3254,16 +2931,6 @@ if (!("ncsedtRestorableObj" in window)) {
     /**
      * Renders the head section editing dialog
      * Creates and returns a dialog for editing HTML document head properties
-     *
-     * @method renderDialogHead
-     * @description Creates a modal dialog with controls for:
-     * - Document title editing
-     * - Meta description management
-     * - Full head section source code editing
-     * - Movable dialog with drag handle
-     * - Cancel and confirm buttons
-     *
-     * @returns {HTMLElement} The dialog DOM element
      */
     ncSimpleHtmlEditor.prototype.renderDialogHead = function () {
         var dialogHead =
@@ -3305,14 +2972,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Sets up event handlers for the head editing dialog
-     *
-     * @method setEventsDialogHead
-     * @description Initializes all interactive elements in the head dialog:
-     * - Cancel button to close dialog
-     * - Show/hide full head source code editor
-     * - Confirm button to apply changes
-     *
-     * @fires click - For various button interactions
      */
     ncSimpleHtmlEditor.prototype.setEventsDialogHead = function () {
         var _this = this;
@@ -3336,15 +2995,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Opens and initializes the head editing dialog
-     *
-     * @method editHead
-     * @description Opens the dialog for editing HTML document head:
-     * - Retrieves current meta description
-     * - Sets up dialog fields with current values
-     * - Displays dialog with current head content
-     *
-     * @throws {Error} If editor is not in edit mode
-     * @fires showModal - When dialog is displayed
      */
     ncSimpleHtmlEditor.prototype.editHead = function () {
         if (!this.editingEnabled) {
@@ -3368,16 +3018,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Confirms and applies changes from the head editing dialog
-     *
-     * @method editHeadConfirm
-     * @description Commits the changes made in the head dialog:
-     * - Updates document title if changed
-     * - Updates meta description if changed
-     * - Updates entire head content if modified
-     * - Creates meta description tag if not present
-     * - Maintains history for undo/redo
-     *
-     * @fires contentchanges - When head properties are updated
      */
     ncSimpleHtmlEditor.prototype.editHeadConfirm = function () {
         if (this.dialogHead.open) {
@@ -3427,14 +3067,6 @@ if (!("ncsedtRestorableObj" in window)) {
 (function () {
     /**
      * Creates a movable element that can be dragged around the window
-     *
-     * @class ncSimpleMoveable
-     * @param {string} movableSelector - CSS selector for the movable element
-     * @param {string} draggerSelector - CSS selector for the drag handle element
-     * @description Initializes drag functionality for dialogs and UI elements:
-     * - Supports both mouse and touch interactions
-     * - Handles window boundary constraints
-     * - Maintains element position within viewport
      */
     window.ncSimpleMoveable = function (movableSelector, draggerSelector) {
         this.movable = document.querySelector(movableSelector);
@@ -3450,19 +3082,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Initializes mouse drag functionality for movable elements
-     *
-     * @method movableOnDrag
-     * @description Sets up mouse event handlers for dragging:
-     * - Mouse down to start drag
-     * - Mouse move to update position
-     * - Mouse up to end drag
-     * - Constrains movement within window bounds
-     * - Handles margin calculations
-     *
-     * @private
-     * @fires mousedown - When drag starts
-     * @fires mousemove - While dragging
-     * @fires mouseup - When drag ends
      */
     ncSimpleMoveable.prototype.movableOnDrag = function () {
         var _this = this;
@@ -3528,18 +3147,6 @@ if (!("ncsedtRestorableObj" in window)) {
 
     /**
      * Initializes touch functionality for movable elements
-     *
-     * @method movableOnTouch
-     * @description Sets up touch event handlers for dragging:
-     * - Touch move to update position
-     * - Touch end to finalize position
-     * - Handles viewport offset calculations
-     * - Constrains movement within window bounds
-     * - Supports mobile and touch-enabled devices
-     *
-     * @private
-     * @fires touchmove - While dragging
-     * @fires touchend - When drag ends
      */
     ncSimpleMoveable.prototype.movableOnTouch = function () {
         var _this = this;
