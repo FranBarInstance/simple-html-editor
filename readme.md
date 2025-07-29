@@ -86,6 +86,8 @@ The `ncsedt-implement:before` comment helps detect dynamic changes that should b
 
 ## Options
 
+**IMPORTANT**: Do not enter the API key in the settings, as this poses a security risk. There is an option to configure the model in the editor.
+
 ```javascript
 var options = {
     // Selector for editable content, default "body"
