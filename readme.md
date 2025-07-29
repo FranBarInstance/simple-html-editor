@@ -127,8 +127,8 @@ var options = {
         },
         azure: {
             enabled: false,
-            url: '', // Your Azure endpoint
-            model: '' // Your Azure model
+            url: '',
+            model: ''
         },
         gemini: {
             enabled: false,
@@ -148,7 +148,7 @@ var options = {
     },
 
     // Active buttons and toolbar order
-    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'agent', 'save'],
+    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github'],
 };
 
 var editor = new ncSimpleHtmlEditor(options);
