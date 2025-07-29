@@ -270,7 +270,7 @@ if (!("ncsedtRestorableObj" in window)) {
             },
 
             additionalPrompts: {
-                "only replacement": '(Additional instructions: Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.)'
+                "only replacement": 'Iinstructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.'
             },
 
             /**
@@ -1983,10 +1983,11 @@ if (!("ncsedtRestorableObj" in window)) {
             return;
         }
 
-        let fullPrompt = `INPUT:\n${currentCode}\n\nUser instructions:\n${prompt}`;
+        let fullPrompt = `User instructions:\n${prompt}\n\nINPUT:\n${currentCode}`;
         if (additionalPromptKey !== 'none' && this.options.additionalPrompts[additionalPromptKey]) {
-            fullPrompt += '\n\n' + this.options.additionalPrompts[additionalPromptKey];
+            fullPrompt = this.options.additionalPrompts[additionalPromptKey] + '\n\n' + fullPrompt;
         }
+        console.log(fullPrompt)
 
         var executeBtn = document.querySelector('#ncsedt-dialog-agent .execute-ai');
         var originalBtnText = executeBtn.textContent;
