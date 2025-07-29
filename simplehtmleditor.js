@@ -2071,21 +2071,23 @@ if (!("ncsedtRestorableObj" in window)) {
      * @param {string} originalBtnText - Original button text to restore
      */
     ncSimpleHtmlEditor.prototype.callOllamaAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
-        if (!this.options.aiBackends.ollama.model) {
-            responseTextarea.value = "Ollama model not configured. Please set it in editor options.";
+        const backend = 'ollama';
+        const config = this.sessionConfig.aiBackends[backend];
+
+        if (!config.enabled) {
+            responseTextarea.value = "Ollama backend is disabled";
             executeBtn.disabled = false;
             executeBtn.textContent = originalBtnText;
             return;
         }
-        var model = this.options.aiBackends.ollama.model;
 
-        fetch(this.options.aiBackends.ollama.url, {
+        fetch(config.url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: model,
+                model: config.model,
                 prompt: prompt,
                 stream: false,
                 options: {
