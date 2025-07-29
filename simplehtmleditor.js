@@ -660,9 +660,6 @@ if (!("ncsedtRestorableObj" in window)) {
          */
 
 
-        /*
-         * Determines if the editing is active, can be true/false.
-         */
         this.editingEnabled = null;
 
         /*
@@ -688,15 +685,7 @@ if (!("ncsedtRestorableObj" in window)) {
          */
         this.focusedElement = this.editable;
         this.previousFocusedElement = this.focusedElement;
-
-        /*
-         * Observer
-         */
         this.observer = this.setObserver();
-
-        /*
-         * undo/redo history
-         */
         this.historyUndo = [];
         this.historyRedo = [];
         this.historyForce = [];
@@ -1225,7 +1214,6 @@ if (!("ncsedtRestorableObj" in window)) {
             throw new Error('Option "toolbar" must be an array');
         }
 
-        // Sanitize values
         if (options.mutationGroupingWindowMs) {
             options.mutationGroupingWindowMs = Math.max(MIN_GROUPING_WINDOW_MS, options.mutationGroupingWindowMs);
         }
@@ -1242,8 +1230,6 @@ if (!("ncsedtRestorableObj" in window)) {
                     if (typeof options.aiBackends[backend].enabled !== 'boolean') {
                         options.aiBackends[backend].enabled = false;
                     }
-
-                    // Validar configuraciones requeridas
                     if (backend === 'azure') {
                         if (!options.aiBackends[backend].url || !options.aiBackends[backend].model) {
                             options.aiBackends[backend].enabled = false;
@@ -1284,8 +1270,6 @@ if (!("ncsedtRestorableObj" in window)) {
             }
 
             mutations.forEach(function (mutation) {
-
-                // Time to group mutations.
                 mutation.time = Date.now() / TIME_SCALE_FACTOR;
 
                 switch (mutation.type) {
@@ -1662,17 +1646,14 @@ if (!("ncsedtRestorableObj" in window)) {
         const dialog = document.getElementById('ncsedt-dialog-config');
         const backendSelect = document.getElementById('ncsedt-config-backend');
 
-        // Generar campos de configuración cuando cambia el backend
         backendSelect.addEventListener('change', function () {
             _this.updateConfigFields(this.value);
         });
 
-        // Botón cancelar
         document.querySelector("#ncsedt-dialog-config .cancel").addEventListener('click', function () {
             dialog.close();
         });
 
-        // Botón guardar
         document.querySelector("#ncsedt-dialog-config .confirm").addEventListener('click', function () {
             _this.saveBackendConfig();
             dialog.close();
@@ -1701,7 +1682,6 @@ if (!("ncsedtRestorableObj" in window)) {
     </div>
     <div class="separator"></div>`;
 
-        // Solo mostrar campo API Key para backends que lo necesitan
         if (backend !== 'ollama') {
             fieldsHTML += `
         <div class="config-field">
@@ -1729,7 +1709,6 @@ if (!("ncsedtRestorableObj" in window)) {
             }
         }
 
-        // Actualizar el selector en el diálogo de agente
         this.updateBackendSelector();
     };
 
@@ -1785,7 +1764,6 @@ if (!("ncsedtRestorableObj" in window)) {
             '                   <select id="ncsedt-dialog-agent-additional-prompt" class="sbutton" style="padding: 8px">' +
             '                       <option value="none">None</option>';
 
-        // Add additional prompt options
         for (const [key, value] of Object.entries(this.options.additionalPrompts)) {
             const selected = key === "only replacement" ? ' selected="selected"' : '';
             dialogAgent += `<option value="${key}"${selected}>${key}</option>`;
@@ -1838,7 +1816,6 @@ if (!("ncsedtRestorableObj" in window)) {
         var backends = ['ollama', 'openrouter', 'anthropic', 'azure', 'gemini', 'openai'];
         var select = document.getElementById('ncsedt-dialog-agent-backend');
 
-        // Disable options for backends that aren't enabled or properly configured
         backends.forEach(backend => {
             var option = select.querySelector(`option[value="${backend}"]`);
 
@@ -1866,7 +1843,6 @@ if (!("ncsedtRestorableObj" in window)) {
             }
         });
 
-        // Botones básicos
         document.querySelector("#ncsedt-dialog-agent .cancel").addEventListener('click', function () {
             _this.dialogAgent.close();
         });
@@ -1875,7 +1851,6 @@ if (!("ncsedtRestorableObj" in window)) {
             _this.editAgentConfirm();
         });
 
-        // Navegación
         document.querySelector("#ncsedt-dialog-agent .parent").addEventListener('click', function () {
             _this.editAgentParent();
         });
@@ -1884,7 +1859,6 @@ if (!("ncsedtRestorableObj" in window)) {
             _this.editAgentChild();
         });
 
-        // Acciones de IA
         document.querySelector("#ncsedt-dialog-agent .execute-ai").addEventListener('click', function () {
             _this.executeAIPrompt();
         });
@@ -2004,19 +1978,16 @@ if (!("ncsedtRestorableObj" in window)) {
         console.log("Ejecutando executeAIPrompt");
         console.log("Backend seleccionado:", backend);
 
-        // Validate input
         if (!prompt.trim()) {
             alert("Please enter a prompt for the AI");
             return;
         }
 
-        // Get additional prompt if selected
         let fullPrompt = `INPUT:\n${currentCode}\n\nUser instructions:\n${prompt}`;
         if (additionalPromptKey !== 'none' && this.options.additionalPrompts[additionalPromptKey]) {
             fullPrompt += '\n\n' + this.options.additionalPrompts[additionalPromptKey];
         }
 
-        // Show loading state
         var executeBtn = document.querySelector('#ncsedt-dialog-agent .execute-ai');
         var originalBtnText = executeBtn.textContent;
         executeBtn.disabled = true;
@@ -2212,7 +2183,7 @@ if (!("ncsedtRestorableObj" in window)) {
     };
 
 
-    // Método para Anthropic
+    // Anthropic
     ncSimpleHtmlEditor.prototype.callAnthropicAPI = function (prompt, responseTextarea, executeBtn, originalBtnText) {
         const backend = 'anthropic';
         const config = this.sessionConfig.aiBackends[backend];
@@ -2917,7 +2888,6 @@ if (!("ncsedtRestorableObj" in window)) {
      * @fires contentchanges - When image properties are updated
      */
     ncSimpleHtmlEditor.prototype.editImageConfirmExisting = function () {
-        // Extract new values from dialog fields
         var newsrc = this.dialogImage.querySelector('#ncsedt-dialog-image-src').value;
         var newalt = this.dialogImage.querySelector('#ncsedt-dialog-image-alt').value;
         var newwidth = this.dialogImage.querySelector('#ncsedt-dialog-image-width').value;
@@ -3078,8 +3048,6 @@ if (!("ncsedtRestorableObj" in window)) {
             this.setFocus(this.focusedElement.nextElementSibling);
             this.editImage();
         }
-
-        // disable button if no match
     };
 
     /* ----------------------------------------------------------- */
