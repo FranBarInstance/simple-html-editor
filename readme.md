@@ -1,21 +1,21 @@
-# Simple HTML Editor
+# Simple HTML Editor with AI Agent
 
-A lightweight, customizable **WYSIWYG JavaScript HTML content editor** for modern web applications that provides a robust and intuitive content editing experience.
+A lightweight, customizable **WYSIWYG JavaScript HTML content editor** with **AI Agent** capabilities for modern web applications. Provides a robust and intuitive content editing experience with AI-powered assistance.
 
-Allows you to edit the content of previously created templates or designs, it does not have options to change the design.
-
-Unlike other editors, it allows you to edit the entire document, body and head, also does not use deprecated execCommand().
+Allows you to edit the content of previously created templates or designs while maintaining the original design. Unlike other editors, it allows editing the entire document including both body and head sections, without using deprecated execCommand().
 
 [![screencast](https://repository-images.githubusercontent.com/1023009164/802daf9a-8a30-48f9-8a97-f6a6c91638a1)](https://franbarinstance.github.io/simple-landing-editor/landing/)
 
-## Features
+## Key Features
 
-- Full document editing (body and head)
+- Integrated AI Agent for intelligent content editing
+- Full document editing (body and head sections)
 - Modern implementation (no deprecated execCommand)
 - Comprehensive undo/redo system
-- Image handling with preview and resizing
+- Advanced image handling with preview and resizing
 - Link management with target control
 - Source code editing capability
+- AI-assisted code editing and generation
 - Restorable dynamic content
 - Touch-enabled drag interface
 
@@ -40,8 +40,8 @@ You can include the editor in your project using either the CDN or by downloadin
 #### CDN Installation
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@1.0.1/simplehtmleditor.min.css">
-<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@1.0.1/simplehtmleditor.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.css">
+<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.js"></script>
 ```
 
 #### Local Installation
@@ -51,18 +51,28 @@ You can include the editor in your project using either the CDN or by downloadin
 
 ### Basic Setup
 
-The editor code must be wrapped in a div with the id `ncsedt-implement` and placed at the end of your page: "ncsedt-implement" and placed at the bottom of the page, immediately before "/body", including .js and .css.
+The editor code must be wrapped in a div with the id `ncsedt-implement` and placed at the end of your page immediately before the closing `</body>` tag. This includes both the .js and .css files.
 
-This will start the editor with the default options:
+Basic setup with default options:
 
 ```html
 <!-- ncsedt-implement:before -->
 <div id="ncsedt-implement">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@1.0.1/simplehtmleditor.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@1.0.1/simplehtmleditor.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', function () {
-            var editor = new ncSimpleHtmlEditor();
+            var editor = new ncSimpleHtmlEditor({
+                // AI configuration
+                aiBackends: {
+                    ollama: {
+                        enabled: true,
+                        url: 'http://localhost:11434/api/generate',
+                        model: 'qwen2.5-coder:7b'
+                    }
+                    // Configure other AI backends as needed
+                }
+            });
             editor.start();
         });
     </script>
@@ -70,7 +80,7 @@ This will start the editor with the default options:
 <!-- ncsedt-implement:end -->
 ```
 
-With ncsedt-implement:before, dynamic changes are detected so that they can be removed before saving.
+The `ncsedt-implement:before` comment helps detect dynamic changes that should be removed before saving.
 
 ## Options
 
@@ -94,8 +104,47 @@ var options = {
     // Maximum image size in bytes (large base64 images degrade DOM performance)
     maxImageSizeBytes: 1200000,
 
+    // AI Backend configurations
+    aiBackends: {
+        ollama: {
+            enabled: true,
+            url: 'http://localhost:11434/api/generate',
+            model: 'qwen2.5-coder:7b'
+        },
+        openrouter: {
+            enabled: false,
+            url: 'https://openrouter.ai/api/v1/chat/completions',
+            model: 'qwen/qwen-2.5-coder-32b-instruct:free'
+        },
+        anthropic: {
+            enabled: false,
+            url: 'https://api.anthropic.com/v1/messages',
+            model: 'claude-3-opus-20240229'
+        },
+        azure: {
+            enabled: false,
+            url: '', // Your Azure endpoint
+            model: '' // Your Azure model
+        },
+        gemini: {
+            enabled: false,
+            url: 'https://generativelanguage.googleapis.com/v1beta/models/',
+            model: 'gemini-pro'
+        },
+        openai: {
+            enabled: false,
+            url: 'https://api.openai.com/v1/chat/completions',
+            model: 'gpt-4-turbo'
+        }
+    },
+
+    // Additional prompts for AI
+    additionalPrompts: {
+        "only replacement": 'Instructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.'
+    },
+
     // Active buttons and toolbar order
-    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'save'],
+    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'cut', 'copy', 'paste', 'code', 'link', 'image', 'head', 'agent', 'save'],
 };
 
 var editor = new ncSimpleHtmlEditor(options);
@@ -228,6 +277,29 @@ The following code block will be removed when saving the template:
 ```
 
 ## Events
+
+The editor provides several events that you can listen to for extending functionality:
+
+### Core Events
+
+- `editorstart`: Fired after the editor initialization is complete
+- `editorchanges`: Fired when changes affect the editor's state
+- `contentchanges`: Fired when editable content is modified
+- `focusedchange`: Fired when the focused element changes
+
+### Dialog Events
+
+- `showModal`: Fired when any dialog is displayed
+- `click`: Fired for various button interactions
+- `change`: Fired when file inputs or form fields are modified
+
+### Usage Example
+
+```javascript
+editor.addEventListener('contentchanges', function(e) {
+    console.log('Content was modified');
+});
+```
 
 The editor provides several events that you can listen to for extending functionality:
 
