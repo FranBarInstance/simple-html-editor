@@ -1635,7 +1635,7 @@ if (!("ncsedtRestorableObj" in window)) {
         </div>
         <div class="body">
             <div class="backend-selector">
-                <label>Backend:</label>
+                <label style="width: 20%;text-align: right;">Backend:</label>
                 <select id="ncsedt-config-backend" class="sbutton">
                     <option value="ollama">Ollama</option>
                     <option value="openrouter">OpenRouter</option>
@@ -1689,26 +1689,31 @@ if (!("ncsedtRestorableObj" in window)) {
         const config = this.sessionConfig.aiBackends[backend];
 
         let fieldsHTML = `
+    <div class="separator"></div>
     <div class="config-field">
-        <label for="ncsedt-config-enabled">Enabled:</label>
+        <label for="ncsedt-config-enabled" style="width: 20%;text-align: right;">Enabled:</label>
         <input id="ncsedt-config-enabled" type="checkbox" ${config.enabled ? 'checked' : ''}>
     </div>
+    <div class="separator"></div>
     <div class="config-field">
-        <label for="ncsedt-config-url">API URL:</label>
-        <input id="ncsedt-config-url" type="text" value="${config.url || ''}" class="sbutton">
+        <label for="ncsedt-config-url" style="width: 20%;text-align: right;">API URL:</label>
+        <input id="ncsedt-config-url" type="text" value="${config.url || ''}" class="sbutton" style="width: 75%">
     </div>
+    <div class="separator"></div>
     <div class="config-field">
-        <label for="ncsedt-config-model">Model:</label>
-        <input id="ncsedt-config-model" type="text" value="${config.model || ''}" class="sbutton">
-    </div>`;
+        <label for="ncsedt-config-model" style="width: 20%;text-align: right;">Model:</label>
+        <input id="ncsedt-config-model" type="text" value="${config.model || ''}" class="sbutton" style="width: 75%">
+    </div>
+    <div class="separator"></div>`;
 
         // Solo mostrar campo API Key para backends que lo necesitan
         if (backend !== 'ollama') {
             fieldsHTML += `
         <div class="config-field">
-            <label for="ncsedt-config-apikey">API Key:</label>
-            <input id="ncsedt-config-apikey" type="password" value="${config.apiKey || ''}" class="sbutton">
-        </div>`;
+            <label for="ncsedt-config-apikey" style="width: 20%;text-align: right;">API Key:</label>
+            <input id="ncsedt-config-apikey" type="password" value="${config.apiKey || ''}" class="sbutton" style="width: 75%">
+        </div>
+        <div class="separator"></div>`;
         }
 
         fieldsContainer.innerHTML = fieldsHTML;
