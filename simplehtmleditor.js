@@ -239,7 +239,7 @@ if (!("ncsedtRestorableObj" in window)) {
             },
 
             additionalPrompts: {
-                "only replacement": 'Iinstructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.'
+                "only replacement": 'Iinstructions:\nProvide only what is requested, including all code or text that does not change, without additional comments, without Markdown. The div id ncsedt-implement code must never be modified.'
             },
 
             toolbarCols: null,
