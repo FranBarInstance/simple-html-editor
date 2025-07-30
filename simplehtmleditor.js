@@ -1614,7 +1614,12 @@ if (!("ncsedtRestorableObj" in window)) {
         document.querySelector("#ncsedt-dialog-agent .copy-response").addEventListener('click', function () {
             var responseTextarea = document.getElementById('ncsedt-dialog-agent-response');
             responseTextarea.select();
-            document.execCommand('copy');
+            responseTextarea.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(responseTextarea.value);
+            } catch (err) {
+                console.error('Error clipboard: ', err);
+            }
         });
     };
     /**
