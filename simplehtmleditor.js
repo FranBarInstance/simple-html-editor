@@ -1855,7 +1855,7 @@ if (!("ncsedtRestorableObj" in window)) {
             headers: {
                 'Authorization': `Bearer ${config.apiKey}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.href,
+                'HTTP-Referer': 'https://github.com/FranBarInstance/simple-html-editor',
                 'X-Title': 'Simple HTML Editor'
             },
             body: JSON.stringify({
