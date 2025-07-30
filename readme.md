@@ -150,7 +150,13 @@ var options = {
 
     // Additional prompts for AI
     additionalPrompts: {
-        "only replacement": 'Instructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown.'
+        "name": 'Instructions...'
+    },
+
+    // Custom prompts for AI
+    customPrompts: {
+        "translate": 'Translate to English',
+        "traduce": 'Traduce a Español',
     },
 
     // Active buttons and toolbar order
@@ -285,6 +291,33 @@ The following code block will be removed when saving the template:
     </div>
 </ncsedt-removable>
 ```
+
+## AI Prompts
+
+The editor supports two types of AI prompts:
+
+### Additional Prompts
+
+Additional prompts are predefined prompts that modify the AI's behavior. They are applied before the user's prompt.
+
+```javascript
+additionalPrompts: {
+    "only replacement": 'Instructions:\n Provide only what is requested, including all code or text that does not change, without additional comments, without Markdown. The div id ncsedt-implement code must never be modified.'
+}
+```
+
+### Custom Prompts
+
+Custom prompts are predefined prompts that users can quickly select from the AI agent dialog. These are stored as key-value pairs where the key is displayed in the dropdown menu and the value is the prompt text that will be inserted into the prompt field.
+
+```javascript
+customPrompts: {
+    "translate": 'Translate to English',
+    "traduce": 'Traduce a Español',
+}
+```
+
+When a custom prompt is selected from the dropdown, its value is automatically inserted into the prompt textarea, making it easy to reuse common instructions.
 
 ## Events
 
