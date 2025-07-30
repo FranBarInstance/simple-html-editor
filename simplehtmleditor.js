@@ -1718,6 +1718,19 @@ if (!("ncsedtRestorableObj" in window)) {
         executeBtn.textContent = "...";
         responseTextarea.value = "Processing your request...";
 
+        if (additionalPromptKey === 'only replacement') {
+            const handleAiSuccess = (event) => {
+                if (event.detail.backend === backend) {
+                    let processedValue = event.detail.response;
+                    processedValue = processedValue.replace(/```[a-zA-Z]*\s*/g, '');
+                    processedValue = processedValue.replace(/```/g, '');
+                    responseTextarea.value = processedValue;
+                    document.removeEventListener('aiSuccess', handleAiSuccess);
+                }
+            };
+            document.addEventListener('aiSuccess', handleAiSuccess);
+        }
+
         try {
             switch (backend) {
                 case 'ollama':
@@ -1749,36 +1762,6 @@ if (!("ncsedtRestorableObj" in window)) {
             executeBtn.disabled = false;
             executeBtn.textContent = originalBtnText;
         }
-
-        if (additionalPromptKey === 'only replacement') {
-            console.log(additionalPromptKey);
-            let previousValue = responseTextarea.value;
-
-            const checkAndProcessResponse = () => {
-                const currentValue = responseTextarea.value;
-                if (currentValue !== previousValue) {
-                    let processedValue = currentValue;
-                    processedValue = processedValue.replace(/```[a-zA-Z]*\s*/g, '');
-                    processedValue = processedValue.replace(/```/g, '');
-                    if (processedValue !== currentValue) {
-                        responseTextarea.value = processedValue;
-                    }
-                    previousValue = responseTextarea.value;
-                } else {
-                    //
-                }
-            };
-
-            const intervalId = setInterval(() => {
-                if (!executeBtn.disabled) {
-                    checkAndProcessResponse();
-                    clearInterval(intervalId);
-                } else {
-                    checkAndProcessResponse();
-                }
-            }, 200);
-        }
-
     };
 
     /**
@@ -1820,6 +1803,15 @@ if (!("ncsedtRestorableObj" in window)) {
                 responseTextarea.value = data.response;
                 executeBtn.disabled = false;
                 executeBtn.textContent = originalBtnText;
+
+                // Desencadenar evento de éxito
+                const successEvent = new CustomEvent('aiSuccess', {
+                    detail: {
+                        backend: backend,
+                        response: data.response
+                    }
+                });
+                document.dispatchEvent(successEvent);
             })
             .catch(error => {
                 console.error("Ollama API Error:", error);
@@ -1879,6 +1871,15 @@ if (!("ncsedtRestorableObj" in window)) {
             .then(data => {
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     responseTextarea.value = data.choices[0].message.content;
+
+                    // Desencadenar evento de éxito
+                    const successEvent = new CustomEvent('aiSuccess', {
+                        detail: {
+                            backend: backend,
+                            response: data.choices[0].message.content
+                        }
+                    });
+                    document.dispatchEvent(successEvent);
                 } else {
                     throw new Error("Unexpected response format from OpenRouter");
                 }
@@ -1939,6 +1940,15 @@ if (!("ncsedtRestorableObj" in window)) {
             .then(data => {
                 if (data.content && data.content[0] && data.content[0].text) {
                     responseTextarea.value = data.content[0].text;
+
+                    // Desencadenar evento de éxito
+                    const successEvent = new CustomEvent('aiSuccess', {
+                        detail: {
+                            backend: backend,
+                            response: data.content[0].text
+                        }
+                    });
+                    document.dispatchEvent(successEvent);
                 } else {
                     throw new Error("Unexpected response format from Anthropic");
                 }
@@ -1996,6 +2006,15 @@ if (!("ncsedtRestorableObj" in window)) {
             .then(data => {
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     responseTextarea.value = data.choices[0].message.content;
+
+                    // Desencadenar evento de éxito
+                    const successEvent = new CustomEvent('aiSuccess', {
+                        detail: {
+                            backend: backend,
+                            response: data.choices[0].message.content
+                        }
+                    });
+                    document.dispatchEvent(successEvent);
                 } else {
                     throw new Error("Unexpected response format from Azure");
                 }
@@ -2054,6 +2073,15 @@ if (!("ncsedtRestorableObj" in window)) {
             .then(data => {
                 if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
                     responseTextarea.value = data.candidates[0].content.parts[0].text;
+
+                    // Desencadenar evento de éxito
+                    const successEvent = new CustomEvent('aiSuccess', {
+                        detail: {
+                            backend: backend,
+                            response: data.candidates[0].content.parts[0].text
+                        }
+                    });
+                    document.dispatchEvent(successEvent);
                 } else {
                     throw new Error("Unexpected response format from Gemini");
                 }
@@ -2113,6 +2141,15 @@ if (!("ncsedtRestorableObj" in window)) {
             .then(data => {
                 if (data.choices && data.choices[0] && data.choices[0].message) {
                     responseTextarea.value = data.choices[0].message.content;
+
+                    // Desencadenar evento de éxito
+                    const successEvent = new CustomEvent('aiSuccess', {
+                        detail: {
+                            backend: backend,
+                            response: data.choices[0].message.content
+                        }
+                    });
+                    document.dispatchEvent(successEvent);
                 } else {
                     throw new Error("Unexpected response format from OpenAI");
                 }
@@ -2939,8 +2976,6 @@ if (!("ncsedtRestorableObj" in window)) {
             this.editLink();
         }
     };
-
-    /* ----------------------------------------------------------- */
 
     /**
      * Renders the head section editing dialog
