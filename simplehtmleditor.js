@@ -242,6 +242,11 @@ if (!("ncsedtRestorableObj" in window)) {
                 "only replacement": 'Iinstructions:\nProvide only what is requested, including all code or text that does not change, without additional comments, without Markdown. The div id ncsedt-implement code must never be modified.'
             },
 
+            customPrompts: {
+                "translate": 'Translate to English',
+                "traduce": 'Traduce a Español',
+            },
+
             toolbarCols: null,
 
             /**
@@ -1511,7 +1516,15 @@ if (!("ncsedtRestorableObj" in window)) {
         }
 
         dialogAgent += '                   </select>' +
-            '                   <button type="button" class="sbutton execute-ai">Go!</button>' +
+            '                   <select id="ncsedt-dialog-agent-custom-prompt" class="sbutton" style="padding: 8px">' +
+            '                       <option value="none">Custom prompt</option>';;
+
+        for (const [key, value] of Object.entries(this.options.customPrompts)) {
+            dialogAgent += `<option value="${key}">${key}</option>`;
+        }
+
+        dialogAgent += '                   </select>' +
+            '                   <button type="button" class="sbutton execute-ai" style="float: right;">Go!</button>' +
             '               </div>' +
             '           </div>' +
             '       </div>' +
@@ -1529,9 +1542,10 @@ if (!("ncsedtRestorableObj" in window)) {
             '       <div class="ncsedt-btns-left">' +
             '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
             '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
-            '           <button type="button" class="sbutton go-code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
+            '           <button type="button" class="sbutton go-code" title="Edit code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton ko">&Cross; Ko</button>' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
@@ -1563,6 +1577,15 @@ if (!("ncsedtRestorableObj" in window)) {
             }
         });
 
+        document.getElementById('ncsedt-dialog-agent-custom-prompt').addEventListener('change', function() {
+            const customPromptKey = this.value;
+            const promptTextarea = document.getElementById('ncsedt-dialog-agent-prompt');
+
+            if (customPromptKey !== 'none' && _this.options.customPrompts[customPromptKey]) {
+                promptTextarea.value = _this.options.customPrompts[customPromptKey];
+            }
+        });
+
         document.querySelector("#ncsedt-dialog-agent .config-models").addEventListener('click', function () {
             const backendSelect = document.getElementById('ncsedt-dialog-agent-backend');
             const currentBackend = backendSelect.value;
@@ -1579,6 +1602,10 @@ if (!("ncsedtRestorableObj" in window)) {
         });
 
         document.querySelector("#ncsedt-dialog-agent .cancel").addEventListener('click', function () {
+            _this.dialogAgent.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .ko").addEventListener('click', function () {
             _this.dialogAgent.close();
         });
 
@@ -2191,6 +2218,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton ko">&Cross; Ko</button>' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
@@ -2208,6 +2236,10 @@ if (!("ncsedtRestorableObj" in window)) {
         var _this = this;
 
         document.querySelector("#ncsedt-dialog-code .cancel").addEventListener('click', function () {
+            _this.dialogCode.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-code .ko").addEventListener('click', function () {
             _this.dialogCode.close();
         });
 
@@ -2385,6 +2417,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '           <button type="button" class="sbutton link"><img class="" src="' + this.options.buttons.link.icon + '" title="Edit link"></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton ko">&Cross; Ko</button>' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
@@ -2402,6 +2435,10 @@ if (!("ncsedtRestorableObj" in window)) {
         var _this = this;
 
         document.querySelector("#ncsedt-dialog-image .cancel").addEventListener('click', function () {
+            _this.dialogImage.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-image .ko").addEventListener('click', function () {
             _this.dialogImage.close();
         });
 
@@ -2748,6 +2785,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '           <button type="button" class="sbutton image"><img class="" src="' + this.options.buttons.image.icon + '" title="Edit image"></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton ko">&Cross; Ko</button>' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
@@ -2765,6 +2803,10 @@ if (!("ncsedtRestorableObj" in window)) {
         var _this = this;
 
         document.querySelector("#ncsedt-dialog-link .cancel").addEventListener('click', function () {
+            _this.dialogLink.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-link .ko").addEventListener('click', function () {
             _this.dialogLink.close();
         });
 
@@ -3009,6 +3051,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '           <button type="button" class="sbutton show-all"><img class="" src="' + this.options.buttons.code.icon + '" title="Edit code"> Edit all</button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
+            '           <button type="button" class="sbutton ko">&Cross; Ko</button>' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
@@ -3026,6 +3069,10 @@ if (!("ncsedtRestorableObj" in window)) {
         var _this = this;
 
         document.querySelector("#ncsedt-dialog-head .cancel").addEventListener('click', function () {
+            _this.dialogHead.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-head .ko").addEventListener('click', function () {
             _this.dialogHead.close();
         });
 
