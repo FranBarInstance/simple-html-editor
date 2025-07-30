@@ -1529,6 +1529,7 @@ if (!("ncsedtRestorableObj" in window)) {
             '       <div class="ncsedt-btns-left">' +
             '           <button type="button" class="sbutton parent" title="Find parent">&Uparrow;</button>' +
             '           <button type="button" class="sbutton child" title="Find child">&Downarrow;</button>' +
+            '           <button type="button" class="sbutton go-code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
             '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
@@ -1595,6 +1596,14 @@ if (!("ncsedtRestorableObj" in window)) {
 
         document.querySelector("#ncsedt-dialog-agent .execute-ai").addEventListener('click', function () {
             _this.executeAIPrompt();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .go-code").addEventListener('click', function () {
+            if (_this.dialogAgent.open) {
+                _this.dialogAgent.close();
+            }
+
+            _this.command(_this.options.buttons.code)
         });
 
         document.querySelector("#ncsedt-dialog-agent .apply-response").addEventListener('click', function () {
