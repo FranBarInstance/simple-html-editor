@@ -1749,6 +1749,7 @@ if (!("ncsedtRestorableObj" in window)) {
             const handleAiSuccess = (event) => {
                 if (event.detail.backend === backend) {
                     let processedValue = event.detail.response;
+                    processedValue = processedValue.replace(/<think\b[^>]*>[\s\S]*?<\/think\b[^>]*>\s*/gi, '');
                     processedValue = processedValue.replace(/```[a-zA-Z]*\s*/g, '');
                     processedValue = processedValue.replace(/```/g, '');
                     responseTextarea.value = processedValue;
