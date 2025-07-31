@@ -1753,8 +1753,8 @@ if (!("ncsedtRestorableObj" in window)) {
                     processedValue = processedValue.replace(/```[a-zA-Z]*\s*/g, '');
                     processedValue = processedValue.replace(/```/g, '');
                     responseTextarea.value = processedValue;
-                    document.removeEventListener('aiSuccess', handleAiSuccess);
                 }
+                document.removeEventListener('aiSuccess', handleAiSuccess);
             };
             document.addEventListener('aiSuccess', handleAiSuccess);
         }
@@ -2478,7 +2478,7 @@ if (!("ncsedtRestorableObj" in window)) {
         document.querySelector("#ncsedt-dialog-image-file").addEventListener('change', function (e) {
             if (this.files[0].size > _this.options.maxImageSizeBytes) {
                 var inMb = (_this.options.maxImageSizeBytes / 1024 / 1024).toFixed(1);
-                alert("File is too big! " + inMb + "Mb. max. (Use .webp format)");
+                alert("File is too big! " + inMb + "MB. max. (Use .webp format)");
                 this.value = "";
 
                 return false;
@@ -3104,7 +3104,7 @@ if (!("ncsedtRestorableObj" in window)) {
             var description = '';
         }
 
-        this.dialogHead.querySelector('#ncsedt-dialog-head-title').value = document.title || 'pedo';
+        this.dialogHead.querySelector('#ncsedt-dialog-head-title').value = document.title || 'Untitled';
         this.dialogHead.querySelector('#ncsedt-dialog-head-description').value = description;
         this.dialogHead.querySelector('#ncsedt-dialog-head-all').value = document.head.innerHTML;
 
