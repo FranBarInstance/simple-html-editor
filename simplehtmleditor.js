@@ -1533,8 +1533,9 @@ if (!("ncsedtRestorableObj" in window)) {
             '           <label>AI Response:</label>' +
             '           <textarea id="ncsedt-dialog-agent-response" class="response sbutton" placeholder="AI response will appear here..." readonly></textarea>' +
             '           <div class="ai-actions">' +
-            '               <button type="button" class="sbutton apply-response">Apply Changes</button>' +
             '               <button type="button" class="sbutton copy-response">Copy</button>' +
+            '               <button type="button" class="sbutton apply-response">Apply Changes</button>' +
+            '               <button type="button" class="sbutton apply-and-close">Apply and Close</button>' +
             '           </div>' +
             '       </div>' +
             '   </div>' +
@@ -1638,6 +1639,12 @@ if (!("ncsedtRestorableObj" in window)) {
             document.querySelector('#ncsedt-dialog-agent .code').value = response;
         });
 
+        document.querySelector("#ncsedt-dialog-agent .apply-and-close").addEventListener('click', function () {
+            var response = document.getElementById('ncsedt-dialog-agent-response').value;
+            document.querySelector('#ncsedt-dialog-agent .code').value = response;
+            _this.editAgentConfirm();
+        });
+
         document.querySelector("#ncsedt-dialog-agent .copy-response").addEventListener('click', function () {
             var responseTextarea = document.getElementById('ncsedt-dialog-agent-response');
             responseTextarea.select();
@@ -1649,6 +1656,7 @@ if (!("ncsedtRestorableObj" in window)) {
             }
         });
     };
+
     /**
      * Opens and initializes the AI agent dialog
      */
