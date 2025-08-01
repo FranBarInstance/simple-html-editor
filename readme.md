@@ -148,6 +148,12 @@ var options = {
         }
     },
 
+    // AI Model Parameters
+    aiModelParams: {
+        temperature: 0.5,
+        top_p: 0.9
+    },
+
     // Additional prompts for AI
     additionalPrompts: {
         "name": 'Instructions...'
