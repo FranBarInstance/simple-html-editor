@@ -205,6 +205,11 @@ if (!("ncsedtRestorableObj" in window)) {
             usesLinearUndoHistory: true,
             mutationGroupingWindowMs: 200,
 
+            aiModelParams: {
+                temperature: 0.5,
+                top_p: 0.9
+            },
+
             aiBackends: {
                 ollama: {
                     enabled: true,
@@ -1824,8 +1829,8 @@ if (!("ncsedtRestorableObj" in window)) {
                 prompt: prompt,
                 stream: false,
                 options: {
-                    temperature: 0.7,
-                    top_p: 0.9
+                    temperature: this.options.aiModelParams.temperature,
+                    top_p: this.options.aiModelParams.top_p
                 }
             })
         })
@@ -1892,7 +1897,8 @@ if (!("ncsedtRestorableObj" in window)) {
                     role: 'user',
                     content: prompt
                 }],
-                temperature: 0.7,
+                temperature: this.options.aiModelParams.temperature,
+                top_p: this.options.aiModelParams.top_p,
                 max_tokens: 2000
             })
         })
@@ -1962,6 +1968,8 @@ if (!("ncsedtRestorableObj" in window)) {
                     role: 'user',
                     content: prompt
                 }],
+                temperature: this.options.aiModelParams.temperature,
+                top_p: this.options.aiModelParams.top_p,
                 max_tokens: 2000
             })
         })
@@ -2028,6 +2036,8 @@ if (!("ncsedtRestorableObj" in window)) {
                     role: 'user',
                     content: prompt
                 }],
+                temperature: this.options.aiModelParams.temperature,
+                top_p: this.options.aiModelParams.top_p,
                 max_tokens: 2000
             })
         })
@@ -2095,7 +2105,11 @@ if (!("ncsedtRestorableObj" in window)) {
                     parts: [{
                         text: prompt
                     }]
-                }]
+                }],
+                generationConfig: {
+                    temperature: this.options.aiModelParams.temperature,
+                    top_p: this.options.aiModelParams.top_p,
+                }
             })
         })
             .then(response => {
