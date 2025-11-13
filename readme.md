@@ -25,10 +25,15 @@ Allows you to edit the content of previously created templates or designs while 
 
 Once the editing is finished, I save the changes I receive in an index.html file to replace the downloaded one.
 
+Demo:
+
 - [DEMO template 1](https://franbarinstance.github.io/simple-html-editor/demo/agency/)
 - [DEMO template 2](https://franbarinstance.github.io/simple-html-editor/demo/grayscale/)
 - [DEMO template 3](https://franbarinstance.github.io/simple-html-editor/demo/ebook/)
 - [DEMO template 4](https://franbarinstance.github.io/simple-html-editor/demo/digimedia/)
+
+Demo template collection:
+
 - [DEMO template collection](https://franbarinstance.github.io/simple-landing-editor/landing/)
 
 To try out the AI, you can create an account at https://openrouter.ai and use a free model, or install Ollama. In order for Ollama to work in local mode, you will need to configure CORS. Here's how: https://duckduckgo.com/?q=Ollama+CORS
