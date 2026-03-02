@@ -2324,7 +2324,7 @@ if (!("ncsedtRestorableObj" in window)) {
             this.dialogCode.querySelector('#ncsedt-dialog-code .link').style.visibility = "hidden";
         }
 
-        this.dialogCode.querySelector('textarea.code').value = this.focusedElement.innerHTML;
+        this.dialogCode.querySelector('textarea.code').value = this.focusedElement.outerHTML;
 
         if (!this.dialogCode.open) {
             this.dialogCode.showModal();
