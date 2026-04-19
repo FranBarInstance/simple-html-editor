@@ -70,6 +70,9 @@ async function build() {
 
     // Clean up temp file
     await fs.rm(combinedCssPath, { force: true })
+
+    // Copy to root for CDN compatibility
+    await fs.copyFile(cssDest, path.join(projectRoot, "simplehtmleditor.min.css"))
     console.log("- dist/simplehtmleditor.min.css")
   } catch (err) {
     console.warn("Warning: Could not build CSS:", err.message)
@@ -115,9 +118,14 @@ async function build() {
   // 7. Clean up
   await fs.rm(combinedPath)
 
+  // Copy to root for CDN compatibility
+  const jsDest = path.join(distDir, "simplehtmleditor.min.js")
+  await fs.copyFile(jsDest, path.join(projectRoot, "simplehtmleditor.min.js"))
+
   console.log("\n✓ Build completed!")
   console.log("  dist/simplehtmleditor.min.js")
   console.log("  dist/simplehtmleditor.min.css")
+  console.log("  (copied to root for CDN)")
 }
 
 build().catch((err) => {
