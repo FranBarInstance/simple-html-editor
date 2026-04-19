@@ -71,7 +71,8 @@
             '           <button type="button" class="sbutton go-code" title="Edit code"><img class="" src="' + this.options.buttons.code.icon + '" ></button>' +
             '       </div>' +
             '       <div class="ncsedt-btns-right">' +
-            '           <button type="button" class="sbutton close">Close</button>' +
+            '           <button type="button" class="sbutton ko">&Cross;</button>' +
+            '           <button type="button" class="sbutton confirm">&check; Ok</button>' +
             '       </div>' +
             '   </div>' +
             '</dialog>';
@@ -103,8 +104,12 @@
             _this.dialogAgent.close();
         });
 
-        document.querySelector("#ncsedt-dialog-agent .close").addEventListener('click', function () {
+        document.querySelector("#ncsedt-dialog-agent .ko").addEventListener('click', function () {
             _this.dialogAgent.close();
+        });
+
+        document.querySelector("#ncsedt-dialog-agent .confirm").addEventListener('click', function () {
+            _this.editAgentConfirm();
         });
 
         document.querySelector("#ncsedt-dialog-agent .parent").addEventListener('click', function () {
