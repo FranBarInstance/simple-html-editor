@@ -206,11 +206,13 @@ textarea.sbutton:active {
     height: 100%;
 }
 
-#ncsedt-dialog-code {
+#ncsedt-dialog-code,
+#ncsedt-dialog-text {
     width: 720px;
 }
 
-#ncsedt-dialog-code textarea {
+#ncsedt-dialog-code textarea,
+#ncsedt-dialog-text textarea {
     width: 100%;
     min-height: 200px;
     height: 100%;

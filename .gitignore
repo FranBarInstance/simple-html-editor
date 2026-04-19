@@ -1,2 +1,39 @@
-/.vscode
+.directory
+.work
+.claude
+.codex
+.specify
 
+AGENTS.md
+CLAUDE.md
+
+# Dependencies
+node_modules/
+**/package-lock.json
+
+# Coverage and test artifacts
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+
+# Python maintenance utilities
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db

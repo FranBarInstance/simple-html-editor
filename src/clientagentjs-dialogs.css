@@ -1,0 +1,294 @@
+/*!
+ * ClientAgentJS Dialog Styles - Matches Simple HTML Editor
+ * Overrides for profile and MCP panels to match editor aesthetics
+ */
+
+/* Overlay - matches ncsedt-dialog backdrop */
+.client-agent-js-profile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 2147483647;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main dialog - matches ncsedt-dialog */
+.client-agent-js-profile-dlg {
+    padding: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+    width: 550px;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    position: relative;
+    /* z-index: 2147483647; */
+}
+
+/* Dialog header - matches ncsedt-btns style */
+.client-agent-js-profile-dlg .caj-dialog-header {
+    width: 100%;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: none;
+}
+
+.client-agent-js-profile-dlg .caj-dialog-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: normal;
+    float: left;
+}
+
+/* Close button - matches sbutton style exactly */
+.client-agent-js-profile-dlg .caj-close-btn {
+    background-color: #FAFAFA;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+    box-sizing: border-box;
+    color: #242424;
+    cursor: pointer;
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 16px;
+    line-height: 1;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.client-agent-js-profile-dlg .caj-close-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.client-agent-js-profile-dlg .caj-close-btn:active {
+    transform: scale(0.85);
+}
+
+/* Fields - horizontal layout like editor dialogs */
+.client-agent-js-profile-dlg .caj-field {
+    margin-bottom: 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+}
+
+.client-agent-js-profile-dlg .caj-select-label {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.client-agent-js-profile-dlg .caj-field-label {
+    font-size: 16px;
+    padding: 2px;
+    display: inline-block;
+    width: 140px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.client-agent-js-profile-dlg .caj-select-text {
+    font-size: 16px;
+    padding: 2px;
+    display: inline-block;
+    width: 140px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* Mobile: vertical layout */
+@media (max-width: 600px) {
+    .client-agent-js-profile-dlg {
+        width: 95vw;
+        max-width: 95vw;
+        padding: 12px;
+    }
+
+    .client-agent-js-profile-dlg .caj-field,
+    .client-agent-js-profile-dlg .caj-select-label {
+        flex-direction: column !important;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .client-agent-js-profile-dlg .caj-field-label,
+    .client-agent-js-profile-dlg .caj-select-text {
+        width: 100%;
+        text-align: left;
+    }
+
+    .client-agent-js-profile-dlg .caj-field input,
+    .client-agent-js-profile-dlg .caj-field select,
+    .client-agent-js-profile-dlg .caj-field textarea,
+    .client-agent-js-profile-dlg .caj-select-label select {
+        width: 100%;
+    }
+
+    .client-agent-js-profile-dlg .caj-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .client-agent-js-profile-dlg .caj-controls button {
+        width: 100%;
+    }
+}
+
+/* Form elements - matches sbutton style, flex to fill space */
+.client-agent-js-profile-dlg select,
+.client-agent-js-profile-dlg input,
+.client-agent-js-profile-dlg textarea {
+    background-color: #FAFAFA;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+    box-sizing: border-box;
+    color: #242424;
+    padding: 6px 14px;
+    flex: 1;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.client-agent-js-profile-dlg textarea {
+    min-height: 80px;
+    display: block;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+}
+
+.client-agent-js-profile-dlg select {
+    cursor: pointer;
+}
+
+/* Password wrapper - fill remaining space */
+.client-agent-js-profile-dlg .caj-password-wrapper {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.client-agent-js-profile-dlg .caj-password-wrapper input {
+    flex: 1;
+}
+
+/* Ensure inputs/selects in caj-field take remaining space */
+.client-agent-js-profile-dlg .caj-field input,
+.client-agent-js-profile-dlg .caj-field select,
+.client-agent-js-profile-dlg .caj-field textarea {
+    flex: 1;
+    width: auto;
+}
+
+/* Ensure selects in caj-select-label take remaining space */
+.client-agent-js-profile-dlg .caj-select-label select {
+    flex: 1;
+    width: auto;
+}
+
+.client-agent-js-profile-dlg .caj-password-toggle {
+    background-color: #FAFAFA;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+    color: #242424;
+    cursor: pointer;
+    padding: 6px 14px;
+}
+
+.client-agent-js-profile-dlg .caj-password-toggle:active {
+    transform: scale(0.85);
+}
+
+/* Readonly input */
+.client-agent-js-profile-dlg .caj-input-readonly {
+    background: #f5f5f5;
+    color: #666;
+}
+
+/* Advanced section */
+.client-agent-js-profile-dlg .caj-advanced {
+    margin-top: 10px;
+}
+
+.client-agent-js-profile-dlg .caj-advanced summary {
+    cursor: pointer;
+    font-weight: normal;
+    padding: 2px;
+    font-size: 16px;
+}
+
+.client-agent-js-profile-dlg .caj-advanced-content {
+    margin-top: 10px;
+    padding-left: 10px;
+}
+
+/* Controls/buttons bar - matches ncsedt-btns */
+.client-agent-js-profile-dlg .caj-controls {
+    width: 100%;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+/* All buttons in controls - matches sbutton exactly */
+.client-agent-js-profile-dlg .caj-controls button {
+    background-color: #FAFAFA;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+    box-sizing: border-box;
+    color: #242424;
+    cursor: pointer;
+    display: inline-block;
+    padding: 6px 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-wrap: break-word;
+}
+
+.client-agent-js-profile-dlg .caj-controls button:active {
+    transform: scale(0.85);
+}
+
+/* Error and feedback messages */
+.client-agent-js-profile-dlg .caj-error {
+    color: #b00020;
+    min-height: 20px;
+    margin: 0 0 8px;
+    padding: 2px;
+}
+
+.client-agent-js-profile-dlg .caj-feedback {
+    font-size: 13px;
+    align-self: center;
+}
+
+.client-agent-js-profile-dlg .caj-feedback--success {
+    color: #0a7a2f;
+}
+
+.client-agent-js-profile-dlg .caj-feedback--error {
+    color: #b00020;
+}
