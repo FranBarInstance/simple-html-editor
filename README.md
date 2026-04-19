@@ -1,6 +1,6 @@
 # Simple HTML Editor with AI Agent
 
-A lightweight, customizable **WYSIWYG JavaScript HTML content editor** with **AI Agent** capabilities for modern web applications. Provides a robust and intuitive content editing experience with AI-powered assistance.
+A lightweight, customizable **WYSIWYG JavaScript HTML content editor** with **AI Agent** and **MCP (Model Context Protocol)** capabilities for modern web applications. Provides a robust and intuitive content editing experience with AI-powered assistance.
 
 Allows you to edit the content of previously created templates or designs while maintaining the original design. Unlike other editors, it allows editing the entire document including both body and head sections, without using deprecated execCommand().
 
@@ -8,14 +8,15 @@ Allows you to edit the content of previously created templates or designs while 
 
 ## Key Features
 
-- Integrated AI Agent for intelligent content editing
+- Integrated AI Agent with MCP (Model Context Protocol) support for intelligent content editing
 - Full document editing (body and head sections)
 - Modern implementation (no deprecated execCommand)
 - Comprehensive undo/redo system
 - Advanced image handling with preview and resizing
 - Link management with target control
 - Source code editing capability
-- AI-assisted code editing and generation
+- AI-assisted code editing and generation with streaming responses
+- MCP server integration for extended AI capabilities
 - Restorable dynamic content
 - Touch-enabled drag interface
 
@@ -36,13 +37,47 @@ Demo template collection:
 
 - [DEMO template collection](https://franbarinstance.github.io/simple-landing-editor/landing/)
 
-To try out the AI, you can create an account at https://openrouter.ai and use a free model, or install Ollama. In order for Ollama to work in local mode, you will need to configure CORS. Here's how: https://duckduckgo.com/?q=Ollama+CORS
+To try out the AI, you can create an account at https://openrouter.ai and use a free model, or install Ollama locally. Note that CORS configuration is always required for browser-based AI integrations.
 
-![AI config](demo/ai-config.jpg)
-![AI edit html](demo/ai-edit-html.jpg)
-![AI translate](demo/ai-translate.jpg)
-![AI generate text](demo/ai-generate-text.jpg)
-![AI generate result](demo/ai-result.jpg)
+![AI Editor](demo/ai-edit-html.jpg)
+
+### Ollama CORS Configuration
+
+Ollama does not enable CORS by default. To use it with ClientAgentJS, start Ollama with the appropriate CORS headers:
+
+```bash
+OLLAMA_ORIGINS="*" ollama serve
+```
+
+Or set the environment variable permanently:
+
+```bash
+# Linux/macOS
+export OLLAMA_ORIGINS="*"
+ollama serve
+
+# Windows
+set OLLAMA_ORIGINS=*
+ollama serve
+```
+
+For production environments, restrict origins to your specific domain instead of `*`:
+
+```bash
+OLLAMA_ORIGINS="http://localhost:*" ollama serve
+```
+
+### MCP and CORS
+
+MCP servers also need to support CORS when accessed from the browser. Many MCP servers are designed to run as local processes and are not built for direct browser access.
+
+**Options:**
+
+1. **Run MCP servers locally**: A server on `localhost` accessed from a page also on `localhost` is same-origin and avoids cross-origin restrictions entirely.
+2. **Host your own MCP servers**: Configure them to include the appropriate `Access-Control-Allow-Origin` response headers.
+3. **Route through a backend proxy**: Forward browser requests to MCP servers through your own proxy, keeping the MCP servers unexposed.
+
+When adding an MCP server in the configuration panel, verify that the endpoint either supports CORS or is running on localhost.
 
 ## Getting Started
 
@@ -76,14 +111,20 @@ Basic setup with default options:
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             var editor = new ncSimpleHtmlEditor({
-                // AI configuration
-                aiBackends: {
-                    ollama: {
-                        enabled: true,
-                        url: 'http://localhost:11434/api/generate',
-                        model: 'qwen2.5-coder:7b'
-                    }
-                    // Configure other AI backends as needed
+                // Default AI model profile (optional - user can configure via UI)
+                defaultModel: {
+                    id: 'default-ollama',
+                    name: 'Local Ollama',
+                    provider: 'openai-compatible',
+                    model: 'llama3.2',
+                    apiKey: '',
+                    baseURL: 'http://localhost:11434/v1',
+                    systemPrompt: 'You are a helpful assistant for HTML editing.'
+                },
+                // ClientAgentJS options (optional)
+                agentOptions: {
+                    storageType: 'local', // or 'sessionStorage'
+                    storageKey: 'ncsedt_agent_config'
                 }
             });
             editor.start();
@@ -119,44 +160,23 @@ var options = {
     // Maximum image size in bytes (large base64 images degrade DOM performance)
     maxImageSizeBytes: 1200000,
 
-    // AI Backend configurations
-    aiBackends: {
-        ollama: {
-            enabled: true,
-            url: 'http://localhost:11434/api/generate',
-            model: 'qwen2.5-coder:7b'
-        },
-        openrouter: {
-            enabled: false,
-            url: 'https://openrouter.ai/api/v1/chat/completions',
-            model: 'qwen/qwen-2.5-coder-32b-instruct:free'
-        },
-        anthropic: {
-            enabled: false,
-            url: 'https://api.anthropic.com/v1/messages',
-            model: 'claude-3-opus-20240229'
-        },
-        azure: {
-            enabled: false,
-            url: '',
-            model: ''
-        },
-        gemini: {
-            enabled: false,
-            url: 'https://generativelanguage.googleapis.com/v1beta/models/',
-            model: 'gemini-pro'
-        },
-        openai: {
-            enabled: false,
-            url: 'https://api.openai.com/v1/chat/completions',
-            model: 'gpt-4-turbo'
-        }
+    // Default AI model profile (optional - pre-configures the AI agent)
+    defaultModel: {
+        id: 'default-ollama',
+        name: 'Local Ollama',
+        provider: 'openai-compatible',
+        model: 'llama3.2',
+        apiKey: '', // Leave empty for local Ollama
+        baseURL: 'http://localhost:11434/v1',
+        systemPrompt: 'Never modify the element with id ncsedt-implement. Only process and return what comes after INPUT:'
     },
 
-    // AI Model Parameters
-    aiModelParams: {
-        temperature: 0.5,
-        top_p: 0.9
+    // ClientAgentJS configuration options
+    agentOptions: {
+        storageType: 'local',        // 'local' or 'sessionStorage'
+        storageKey: 'ncsedt_agent_config',  // Key for storing profiles
+        agentsMd: null,              // Optional: path to custom AGENTS.md file
+        dialogClass: null            // Optional: custom CSS class for dialogs
     },
 
     // Additional prompts for AI
@@ -171,7 +191,8 @@ var options = {
     },
 
     // Active buttons and toolbar order
-    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github'],
+    // Available buttons: edit, undo, redo, up, down, previous, next, cut, copy, paste, head, code, text, agent, link, image, save, profiles, mcp, github
+    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'text', 'link', 'agent', 'image', 'save', 'profiles', 'mcp', 'github'],
 };
 
 var editor = new ncSimpleHtmlEditor(options);
@@ -188,6 +209,40 @@ var editor = new ncSimpleHtmlEditor({
 ```
 
 For editableContentSelector: ".class" only the first element found will be editable.
+
+### AI Agent and MCP Configuration
+
+The editor uses [**ClientAgentJS**](https://github.com/FranBarInstance/ClientAgentJS) for AI capabilities. You can pre-configure a default model or let users configure it through the UI.
+
+#### Pre-configure a default model
+
+```javascript
+var editor = new ncSimpleHtmlEditor({
+    defaultModel: {
+        id: 'my-profile',
+        name: 'OpenRouter Free',
+        provider: 'openai-compatible',
+        model: 'qwen/qwen-2.5-coder-32b-instruct:free',
+        apiKey: 'your-api-key',
+        baseURL: 'https://openrouter.ai/api/v1',
+        systemPrompt: 'Never modify the element with id ncsedt-implement. Only process and return what comes after INPUT:'
+    }
+});
+```
+
+**Supported providers:** `openai-compatible`, `anthropic`, `google`, `openai`
+
+#### User configuration via UI
+
+Users can configure their own AI profiles through the built-in configuration panel:
+
+1. Add the `profiles` button to the toolbar
+2. Click the ⚙️ (Model) button in the AI dialog, or click the `profiles` toolbar button
+3. Add your API key and model settings in the configuration panel
+
+#### MCP Servers (optional)
+
+The editor supports Model Context Protocol (MCP) servers for extended AI capabilities. Add the `mcp` button to the toolbar to configure MCP servers.
 
 ### Create a custom button
 
@@ -234,7 +289,7 @@ var options = {
     /*
      * Add the button at the end of the toolbar
      */
-    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'agent', 'link', 'image', 'save', 'github', 'help']
+    toolbar: ['edit', 'undo', 'redo', 'up', 'down', 'previous', 'next', 'cut', 'copy', 'paste', 'head', 'code', 'text', 'link', 'agent', 'image', 'save', 'profiles', 'mcp', 'github', 'help']
 };
 
 var editor = new ncSimpleHtmlEditor(options);
