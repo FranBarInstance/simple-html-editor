@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Text Dialog Module
+ * Simple HTML Editor - Text Dialog Module
  * Text content editing dialog
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

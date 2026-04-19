@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Editor UI Module
+ * Simple HTML Editor - Editor UI Module
  * UI rendering and event handling
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

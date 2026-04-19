@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Image Dialog Module
+ * Simple HTML Editor - Image Dialog Module
  * Image editing dialog
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

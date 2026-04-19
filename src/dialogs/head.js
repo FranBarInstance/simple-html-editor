@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Head Dialog Module
+ * Simple HTML Editor - Head Dialog Module
  * Head section editing dialog
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Editor Navigation Module
+ * Simple HTML Editor - Editor Navigation Module
  * Element navigation (up, down, previous, next)
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

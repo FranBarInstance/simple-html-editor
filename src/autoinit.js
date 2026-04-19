@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Auto-Initialization Module
+ * Simple HTML Editor - Auto-Initialization Module
  * Automatically initializes the editor when the data-ncsheditorauto attribute is present
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 /**

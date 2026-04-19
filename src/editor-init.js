@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Editor Init Module
+ * Simple HTML Editor - Editor Init Module
  * Editor initialization and core lifecycle
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Editor Content Module
+ * Simple HTML Editor - Editor Content Module
  * Content saving, serialization, undo/redo history
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {

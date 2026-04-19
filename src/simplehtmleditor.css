@@ -1,9 +1,7 @@
 @charset "UTF-8";
 /*!
- * Simple HTML Editor v2.0.1
- * https://github.com/FranBarInstance/simple-html-editor
- * Copyright (c) 2022-2025
- * Licensed under MIT
+ * Simple HTML Editor
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 [contentEditable="true"] *:hover:not(.focused) {

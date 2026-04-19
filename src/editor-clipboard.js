@@ -1,10 +1,8 @@
 /*!
- * Simple HTML Editor v2.0.1 - Editor Clipboard Module
+ * Simple HTML Editor - Editor Clipboard Module
  * Copy, cut and paste functionality
  *
- * @author FranBarInstance
- * @license MIT
- * @version 2.0.1
+ * https://github.com/FranBarInstance/simple-html-edit
  */
 
 (function () {
