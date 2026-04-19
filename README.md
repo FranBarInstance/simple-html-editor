@@ -89,7 +89,7 @@ You can include the editor in your project using either the CDN or by downloadin
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.css">
-<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@2.0.1/simplehtmleditor.min.js"></script>
 ```
 
 #### Local Installation
@@ -106,8 +106,8 @@ Basic setup with default options:
 ```html
 <!-- ncsedt-implement:before -->
 <div id="ncsedt-implement">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/simplehtmleditor.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@2.0.1/simplehtmleditor.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@2.0.1/simplehtmleditor.min.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             var editor = new ncSimpleHtmlEditor({
