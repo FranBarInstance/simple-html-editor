@@ -472,6 +472,27 @@ var editor = new ncSimpleHtmlEditor({
     }
 });
 ```
+
+## CDN Files Location
+
+For backward compatibility, minified files are included in both the root directory and `dist/`:
+
+```
+simple-html-editor/
+├── simplehtmleditor.min.js      # Root (legacy, CDN compatible)
+├── simplehtmleditor.min.css     # Root (legacy, CDN compatible)
+└── dist/
+    ├── simplehtmleditor.min.js  # Preferred location
+    └── simplehtmleditor.min.css
+```
+
+The root files are maintained for existing CDN users. For new implementations, use the `dist/` path:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/dist/simplehtmleditor.min.css">
+<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@master/dist/simplehtmleditor.min.js"></script>
+```
+
 ## Limitations
 
 The editor works on more than 90% of modern templates without the need to modify the template.
