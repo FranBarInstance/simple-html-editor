@@ -88,8 +88,8 @@ You can include the editor in your project using either the CDN or by downloadin
 #### CDN Installation
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/simplehtmleditor.min.css">
-<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/simplehtmleditor.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/simplehtmleditor.min.css">
+<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/simplehtmleditor.min.js"></script>
 ```
 
 #### Local Installation
@@ -106,8 +106,8 @@ Basic setup with default options:
 ```html
 <!-- ncsedt-implement:before -->
 <div id="ncsedt-implement">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/simplehtmleditor.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/simplehtmleditor.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/simplehtmleditor.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/simplehtmleditor.min.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             var editor = new ncSimpleHtmlEditor({
@@ -489,8 +489,8 @@ simple-html-editor/
 The root files are maintained for existing CDN users. For new implementations, use the `dist/` path:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/dist/simplehtmleditor.min.css">
-<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.0/dist/simplehtmleditor.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/dist/simplehtmleditor.min.css">
+<script src="https://cdn.jsdelivr.net/gh/FranBarInstance/simple-html-editor@3.0.2/dist/simplehtmleditor.min.js"></script>
 ```
 
 ## Limitations
