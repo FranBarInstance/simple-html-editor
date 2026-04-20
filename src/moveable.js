@@ -1,5 +1,5 @@
 /*!
- * Simple HTML Editor v2.0.1 - Moveable Module
+ * Simple HTML Editor - Moveable Module
  * Draggable UI component for dialogs and toolbar
  *
  * https://github.com/FranBarInstance/simple-html-edit
